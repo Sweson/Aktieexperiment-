@@ -1,0 +1,76 @@
+# Aktieexperiment - konfiguration
+# Alla regler för AI-tradern finns här
+
+experiment:
+  name: "AI Aktieexperiment"
+  starting_capital_sek: 10000.00
+  currency: "SEK"
+  goal: "Maximera vinst på kortast möjliga tid"
+
+# Handelsregler
+rules:
+  # Inga blankningar, ingen belåning
+  allow_short: false
+  allow_margin: false
+  # Inga fraktionerade aktier
+  fractional_shares: false
+  # Realistisk courtage (Avanza Mini ~ 0.25%, min 1 SEK)
+  fee_pct: 0.0025
+  fee_min_sek: 1.00
+  # Riskhantering
+  max_position_pct: 0.30   # Max 30% av portföljvärde i en enskild aktie
+  min_cash_pct: 0.00       # Får gå all-in om AI vill
+  # En "tur" per timme
+  turn_interval_minutes: 60
+
+# Watchlist - aktier som AI:n får handla med
+# Endast Stockholmsbörsen (SEK) för att slippa valutarisk
+# Yahoo Finance-tickers
+watchlist:
+  # Storbolag
+  - ticker: "VOLV-B.ST"
+    name: "Volvo B"
+    sector: "Industri"
+  - ticker: "ERIC-B.ST"
+    name: "Ericsson B"
+    sector: "Tech"
+  - ticker: "HM-B.ST"
+    name: "H&M B"
+    sector: "Detaljhandel"
+  - ticker: "SAND.ST"
+    name: "Sandvik"
+    sector: "Industri"
+  - ticker: "ATCO-A.ST"
+    name: "Atlas Copco A"
+    sector: "Industri"
+  - ticker: "INVE-B.ST"
+    name: "Investor B"
+    sector: "Investmentbolag"
+  - ticker: "ABB.ST"
+    name: "ABB"
+    sector: "Industri"
+  - ticker: "AZN.ST"
+    name: "AstraZeneca"
+    sector: "Läkemedel"
+  - ticker: "SEB-A.ST"
+    name: "SEB A"
+    sector: "Bank"
+  - ticker: "SWED-A.ST"
+    name: "Swedbank A"
+    sector: "Bank"
+  # Mer volatila / tillväxt
+  - ticker: "EVO.ST"
+    name: "Evolution"
+    sector: "Gaming"
+  - ticker: "NIBE-B.ST"
+    name: "NIBE B"
+    sector: "Industri"
+  - ticker: "EMBRAC-B.ST"
+    name: "Embracer B"
+    sector: "Gaming"
+  - ticker: "SBB-B.ST"
+    name: "SBB B"
+    sector: "Fastigheter"
+  - ticker: "SAS.ST"
+    name: "SAS"
+    sector: "Flyg"
