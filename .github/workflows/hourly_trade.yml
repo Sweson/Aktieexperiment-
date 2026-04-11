@@ -1,21 +1,24 @@
 name: Hourly AI Trade
 
-# Kör en handelstur varje timme. Workflowet hämtar marknadsdata,
-# sparar en snapshot och committar tillbaka. Själva köp/sälj-beslutet
-# förväntas tas av en AI-runner (Claude Code/Anthropic API) som invokas
-# i steget "AI decision" — om ANTHROPIC_API_KEY finns som secret.
-# Annars körs bara snapshot + HOLD så att experimentet ändå tickar.
+# Kör en handelstur varje hel timme på Stockholmsbörsens öppettider:
+# måndag–fredag 09:00–16:00 (Europe/Stockholm).
+#
+# GitHub Actions cron är i UTC och hanterar inte sommartid, så vi
+# använder ett bredare UTC-fönster (06–15) som täcker både CET (UTC+1)
+# och CEST (UTC+2). Ett guard-steg först i jobbet tittar på lokal
+# Stockholmstid och avbryter snyggt om vi är utanför 09–16 mån–fre.
+# Det betyder exakt 8 turer per handelsdag oavsett DST.
 
 on:
   schedule:
-    # Varje hel timme. cron är UTC.
-    - cron: "0 * * * *"
+    # mån–fre, 06–15 UTC. Filtreras sedan av guard-steget nedan.
+    - cron: "0 6-15 * * 1-5"
   workflow_dispatch:
     inputs:
-      mode:
-        description: "snapshot | hold | (lämna tom för auto)"
+      force:
+        description: "Sätt true för att kringgå tidsguard (kör utanför börstid)"
         required: false
-        default: ""
+        default: "false"
 
 permissions:
   contents: write
@@ -28,45 +31,75 @@ jobs:
   trade:
     runs-on: ubuntu-latest
     steps:
+      - name: Trading hours guard (Europe/Stockholm, mån–fre 09–16)
+        id: guard
+        run: |
+          python3 - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          force = os.environ.get("FORCE_RUN", "false").lower() == "true"
+          now = datetime.now(ZoneInfo("Europe/Stockholm"))
+          weekday = now.weekday()  # mån=0, sön=6
+          hour = now.hour
+          in_window = weekday < 5 and 9 <= hour <= 16
+          print(f"Stockholmstid: {now:%Y-%m-%d %H:%M %Z}  weekday={weekday}  hour={hour}")
+          print(f"Inom handelstid: {in_window}  force={force}")
+
+          gh_out = os.environ.get("GITHUB_OUTPUT")
+          if gh_out:
+              with open(gh_out, "a") as f:
+                  f.write(f"run={'true' if (in_window or force) else 'false'}\n")
+          PY
+        env:
+          FORCE_RUN: ${{ github.event.inputs.force }}
+
       - name: Checkout branch
+        if: steps.guard.outputs.run == 'true'
         uses: actions/checkout@v4
         with:
           ref: claude/stock-trading-experiment-mlV67
           fetch-depth: 0
 
       - name: Set up Python
+        if: steps.guard.outputs.run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
+        if: steps.guard.outputs.run == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Take market snapshot
+        if: steps.guard.outputs.run == 'true'
         id: snap
         run: |
           python -m src.turn snapshot | tee /tmp/snapshot.txt
 
       - name: AI decision (optional)
-        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        if: steps.guard.outputs.run == 'true' && env.ANTHROPIC_API_KEY != ''
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python -m src.ai_decide
 
       - name: Fallback HOLD (when no AI key)
-        if: ${{ env.ANTHROPIC_API_KEY == '' }}
+        if: steps.guard.outputs.run == 'true' && env.ANTHROPIC_API_KEY == ''
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python -m src.turn hold --reason "Auto-HOLD: ingen AI-runner konfigurerad"
 
       - name: Show report
+        if: steps.guard.outputs.run == 'true'
         run: python -m src.turn report
 
       - name: Commit and push state
+        if: steps.guard.outputs.run == 'true'
         run: |
           git config user.name  "ai-trader-bot"
           git config user.email "ai-trader-bot@users.noreply.github.com"
@@ -78,3 +111,7 @@ jobs:
             git commit -m "tur #${TURN} - automatisk handelstur"
             git push origin claude/stock-trading-experiment-mlV67
           fi
+
+      - name: Skipped (utanför handelstid)
+        if: steps.guard.outputs.run != 'true'
+        run: echo "Hoppar över - utanför mån-fre 09:00-16:00 Europe/Stockholm."

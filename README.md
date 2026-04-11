@@ -7,7 +7,8 @@ maximera vinst genom att handla på Stockholmsbörsen, en tur per timme.
 
 - **Startkapital:** 10 000 SEK
 - **Marknad:** Stockholmsbörsen (large/mid cap)
-- **Frekvens:** En tur per timme (cron via GitHub Actions)
+- **Frekvens:** En tur per timme, mån–fre 09:00–16:00 Europe/Stockholm
+  (8 turer per handelsdag, cron via GitHub Actions)
 - **Mål:** Maximera total avkastning på kortast möjliga tid
 - **Beslutsfattare:** Claude (Anthropic API) — eller en mänsklig operatör som
   manuellt kör `src.turn` mellan turerna
@@ -76,16 +77,23 @@ python -m src.turn hold --reason "Inget bra setup just nu"
 python -m src.turn report
 ```
 
-## Köra automatiskt (varje timme)
+## Köra automatiskt (mån–fre 09–16)
 
 Workflowet [`hourly_trade.yml`](.github/workflows/hourly_trade.yml) kör en tur
-varje hel timme via GitHub Actions cron. Det:
+varje hel timme **mån–fre 09:00–16:00 Europe/Stockholm** (8 turer per handelsdag).
+Det:
 
-1. Hämtar marknadsdata för watchlisten.
-2. Skriver en snapshot till `data/snapshots.jsonl`.
-3. Om secret `ANTHROPIC_API_KEY` finns: anropar `src.ai_decide` som frågar
+1. Kontrollerar lokal Stockholmstid via en *guard*. Om vi är utanför fönstret
+   eller på en helg avslutas jobbet direkt utan att göra något.
+2. Hämtar marknadsdata för watchlisten.
+3. Skriver en snapshot till `data/snapshots.jsonl`.
+4. Om secret `ANTHROPIC_API_KEY` finns: anropar `src.ai_decide` som frågar
    Claude vad som ska göras och kör det. Annars: loggar en HOLD.
-4. Committar `data/`-ändringar och pushar tillbaka till branchen.
+5. Committar `data/`-ändringar och pushar tillbaka till branchen.
+
+Cron-uttrycket är `0 6-15 * * 1-5` (UTC) — bredare än fönstret för att täcka
+både CET (UTC+1) och CEST (UTC+2). Sommartid hanteras av guard-steget, så
+schemat blir alltid 09–16 lokal tid oavsett tidpunkt på året.
 
 ### Sätt upp AI-runnern
 
