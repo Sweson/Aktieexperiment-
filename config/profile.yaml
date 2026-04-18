@@ -1,0 +1,72 @@
+# Kandidatprofil – styr scoring och outreach.
+# Uppdatera fritt. Avsnittet "keywords" är hjärtat i matchningen.
+
+candidate:
+  name: "Gustav Hansson"
+  headline: "Expert inom digitalisering och transformation med AI-fokus"
+  linkedin: "https://www.linkedin.com/in/gustavhansson"
+  location: "Sverige"
+  # Kort one-liner som används i outreach-utkast.
+  one_liner: >
+    Hjälper organisationer skapa affärsvärde av AI och digital transformation –
+    från strategi och styrning till konkret implementation.
+  # 3–5 kärnmeriter att lyfta i motivering.
+  proof_points:
+    - "Lett AI- och digitaliseringsinitiativ i flera organisationer"
+    - "Erfarenhet av att översätta teknik till styrelse- och ledningsnivå"
+    - "Brygga mellan strategi, organisation och leverans"
+    - "Vana vid förändringsledning i komplexa verksamheter"
+
+# Nyckelord som används för att scora uppdrag mot profilen.
+# weight: 1.0 = baseline. Höga vikter = tydligare match mot kärnkompetensen.
+keywords:
+  core:
+    - { term: "ai", weight: 3.0 }
+    - { term: "artificiell intelligens", weight: 3.0 }
+    - { term: "machine learning", weight: 2.5 }
+    - { term: "maskininlärning", weight: 2.5 }
+    - { term: "digitalisering", weight: 3.0 }
+    - { term: "digital transformation", weight: 3.0 }
+    - { term: "transformation", weight: 2.0 }
+    - { term: "data", weight: 1.5 }
+    - { term: "automation", weight: 1.5 }
+    - { term: "saas", weight: 1.2 }
+    - { term: "tech", weight: 1.0 }
+  boost:
+    - { term: "styrelseordförande", weight: 1.5 }
+    - { term: "governance", weight: 1.2 }
+    - { term: "strategi", weight: 1.2 }
+    - { term: "tillväxt", weight: 1.2 }
+    - { term: "scaleup", weight: 1.3 }
+    - { term: "change management", weight: 1.3 }
+    - { term: "förändringsledning", weight: 1.3 }
+    - { term: "ledamot sökes", weight: 2.0 }
+    - { term: "nominerings", weight: 1.5 }
+    - { term: "valberedning", weight: 1.5 }
+  negative:
+    # Drar ner scoren – uppdrag där profilen inte passar.
+    - { term: "pro bono", weight: -0.5 }
+    - { term: "junior", weight: -1.0 }
+    - { term: "volontär", weight: -1.0 }
+    - { term: "endast kvinnor", weight: -5.0 }
+    - { term: "revisor", weight: -2.0 }
+
+# Filter – uppdrag som inte matchar dessa hoppas helt över.
+filters:
+  # Lägsta accepterade score för att dyka upp i "list".
+  min_score: 1.0
+  # Geografi: tom lista = alla. Annars endast uppdrag vars lokation
+  # innehåller en av strängarna (case-insensitive).
+  locations_allow: ["sverige", "stockholm", "göteborg", "malmö", "remote", "sweden"]
+  # Branschord som blockerar.
+  blocked_industries: []
+  # Ignorera uppdrag äldre än X dagar.
+  max_age_days: 45
+
+# Preferenser som styr prioritering och outreach-ton.
+preferences:
+  company_stage: ["scaleup", "midmarket", "noterat småbolag", "stiftelse", "offentlig"]
+  role_types: ["styrelseledamot", "styrelseordförande", "advisory board"]
+  compensation_min_sek_year: 0   # 0 = även obetalda uppdrag ok
+  time_commitment_max_days_year: 25
+  conflict_of_interest_keywords: []  # t.ex. konkurrerande företag

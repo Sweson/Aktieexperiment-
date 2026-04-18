@@ -1,0 +1,64 @@
+# Källor att bevaka. Varje collector läser denna fil.
+#
+# Typer som stöds:
+#   rss          - generisk RSS/Atom-feed, titel+summary används för scoring
+#   csv          - CSV-fil på disk eller URL (kolumner: title,org,summary,url,location,posted_at)
+#   manual       - manuellt inmatade uppdrag via "styrelse add"
+#   styrelseakademien - medlemsexport från StyrelseAkademien (CSV dumpar)
+#   nel          - Nordic Executive List (daglig mejl → spara mejl som .eml i angiven mapp)
+#
+# OBS: inga källor scrapar bakom inloggning. StyrelseAkademiens annonser
+# kräver medlemskap – logga in och exportera listan manuellt till
+# data/import/styrelseakademien.csv, så läser collectorn den.
+
+sources:
+  - name: styrelseakademien_export
+    type: csv
+    path: "data/import/styrelseakademien.csv"
+    notes: >
+      Logga in på styrelseakademien.se, gå till "Hitta styrelseuppdrag",
+      kopiera aktuella annonser till CSV med kolumnerna
+      title,org,summary,url,location,posted_at.
+
+  - name: nordic_executive_list
+    type: nel
+    inbox_dir: "data/import/nel_inbox"
+    notes: >
+      Prenumerera på dagliga mejlet från nordicexecutivelist.com och
+      spara mejl (.eml) i inbox_dir. Collectorn parsar rubriker+länkar.
+
+  - name: board_se_rss
+    type: rss
+    url: "https://board.se/feed/"
+    notes: "Board Company publicerar uppdrag och artiklar."
+
+  - name: styrelsemagasinet_rss
+    type: rss
+    url: "https://www.styrelsemagasinet.se/feed/"
+    notes: "Omvärldsbevakning – fångar artiklar om uppdrag och trender."
+
+  - name: manuella_uppdrag
+    type: manual
+    notes: "Uppdrag du lagt in själv via 'styrelse add'."
+
+  - name: linkedin_signals
+    type: csv
+    path: "data/import/linkedin_signals.csv"
+    notes: >
+      LinkedIn scrapas inte (ToS). Kopiera in intressanta poster manuellt
+      i CSV – tex "XYZ AB söker styrelseledamot med AI-erfarenhet".
+
+# Kandidatbanker att registrera sig i (outreach-mål, inte scraping-källor).
+candidate_banks:
+  - name: "StyrelseAkademiens kandidatbank"
+    url: "https://www.styrelseakademien.se/om-oss/medlemskapet/hitta-styrelseuppdrag"
+    action: "Registrera och uppdatera profil kvartalsvis."
+  - name: "Nordic Executive List"
+    url: "https://nordicexecutivelist.com/"
+    action: "Prenumerera på dagliga bevakningen."
+  - name: "Ownershift / Allbright nätverk"
+    url: "https://www.allbright.se/"
+    action: "Eventuellt relevant för mångfaldsdrivna uppdrag."
+  - name: "AI Sweden partnernätverk"
+    url: "https://www.ai.se/"
+    action: "Synliggör AI-profilen via partner- och community-events."
