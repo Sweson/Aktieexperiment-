@@ -51,11 +51,12 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 
 ### Block B — Klassmodell och DLP (E-10) — säkerhetskritisk
 
-- [ ] **T-006 · Paket `packages/classification` — enum + typer**
+- [x] **T-006 · Paket `packages/classification` — enum + typer** _(2026-04-25)_
 
   - Beroende: T-001
   - Filer: `packages/classification/src/index.ts`, `*.test.ts`
   - AC: exporterar `Classification = "open" | "internal"`, zod-schema, helper `assertClassification(x)` som kastar på okända värden inkl. `confidential`/`secret`/`begränsat hemlig`/`hemlig`. Tester ≥95 % coverage.
+  - QA: 38 tester gröna, 100 % statement/branch/function/line coverage.
 
 - [ ] **T-007 · DLP-regex för säkerhetsskyddsmarkeringar**
 
