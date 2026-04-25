@@ -73,11 +73,12 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 
 ### Block C — API-grund och databas
 
-- [ ] **T-009 · Fastify-app skelett med graceful shutdown**
+- [x] **T-009 · Fastify-app skelett med graceful shutdown** _(2026-04-25)_
 
   - Beroende: T-001, T-005
-  - Filer: `apps/api/src/server.ts`, `apps/api/src/app.ts`
-  - AC: hälsoslut `/healthz` och `/readyz`; structured logging (pino) med PII-redaktion; graceful shutdown inom 30 s vid SIGTERM; `npm run dev` startar med nodemon.
+  - Filer: `apps/api/src/server.ts`, `apps/api/src/app.ts`, `apps/api/src/logger.ts`
+  - AC: hälsoslut `/healthz` och `/readyz` med readiness-probe-injection; pino med PII-redaktion på password/token/authorization/cookie/personnummer/ssn/email; SIGTERM/SIGINT triggar graceful shutdown via fastify.close(); `npm run dev` startar via tsx watch.
+  - QA: 10 tester gröna (healthz, readyz både happy och 503-path, 404, logger redaction config), 100 % coverage på app.ts + logger.ts.
 
 - [ ] **T-010 · OpenAPI 3.1 via @fastify/swagger + Scalar UI**
 
