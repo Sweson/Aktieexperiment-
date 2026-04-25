@@ -95,14 +95,16 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - QA: `prisma validate` passerar; en användare har högst en roll per övning via unik nyckel `(tenantId, userId, exerciseId)`.
   - Not: Faktisk migration genereras när docker-compose är igång (T-005 redan klart men kräver att Postgres körs lokalt). Migration ligger i T-019 som första task som kör mot live-DB.
 
-- [ ] **T-012 · Prisma-schema steg 2: Exercise, ExerciseObjective, Capability**
+- [x] **T-012 · Prisma-schema steg 2: Exercise, ExerciseObjective, Capability** _(2026-04-25)_
 
   - Beroende: T-011
-  - AC: relation till tenant via FK; mjuk radering med `deleted_at`; index på `(tenant_id, status)`; `capability` seedad med MSB:s 12 generella förmågor.
+  - AC: relation till tenant via FK; mjuk radering med `deleted_at`; index på `(tenant_id, status)`; `capability` seedad med MSB:s 12 generella förmågor (seed i T-027).
+  - QA: `prisma validate` passerar; ExerciseStatus + ExerciseFormat enums modellerar HSEEP-statusövergångar och övningstyper (TTX/drill/functional/full_scale/workshop).
 
-- [ ] **T-013 · Prisma-schema steg 3: MselEvent (HSEEP-fält)**
+- [x] **T-013 · Prisma-schema steg 3: MselEvent (HSEEP-fält)** _(2026-04-25)_
   - Beroende: T-012
   - AC: fält enligt kravspec §4.3 F-04.1: event_no, scenario_time, real_time, from_role, to_role, mode, message, expected_response, capability_id, objective_id, assigned_controller, status, key_event, attachments[]; `classification` enum `open|internal` med default `internal`; index på `(exercise_id, scenario_time)`.
+  - QA: alla HSEEP-fält modellerade; MselInjectMode (push/pull/conditional) + MselStatus enum för spårbar status; conditionExpression-fält reserverat för T-033 villkorsstyrda injekter.
 
 ### Block D — Audit-logg (E-11)
 

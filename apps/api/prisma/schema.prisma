@@ -68,6 +68,7 @@ model Tenant {
 
   users       User[]
   memberships Membership[]
+  exercises   Exercise[]
 
   @@index([kind])
   @@map("tenant")
@@ -104,12 +105,146 @@ model Membership {
   createdAt  DateTime     @default(now()) @map("created_at")
   updatedAt  DateTime     @updatedAt @map("updated_at")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise? @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 
   /// En användare får högst en roll per övning (kravspec §4.2 F-02.2 AC1).
   @@unique([tenantId, userId, exerciseId])
   @@index([tenantId, role])
   @@index([userId])
   @@map("membership")
+}
+
+/// MSB:s 12 generella förmågor (seedade i T-027).
+model Capability {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  objectives ExerciseObjective[]
+  mselEvents MselEvent[]
+
+  @@map("capability")
+}
+
+enum ExerciseStatus {
+  draft
+  planning
+  approved
+  in_progress
+  completed
+  cancelled
+  archived
+}
+
+enum ExerciseFormat {
+  ttx // Tabletop exercise
+  drill
+  functional
+  full_scale
+  workshop
+}
+
+model Exercise {
+  id             String         @id @default(uuid()) @db.Uuid
+  tenantId       String         @map("tenant_id") @db.Uuid
+  name           String
+  slug           String
+  summary        String?
+  format         ExerciseFormat
+  status         ExerciseStatus @default(draft)
+  classification Classification @default(internal)
+  startsAt       DateTime?      @map("starts_at")
+  endsAt         DateTime?      @map("ends_at")
+  createdById    String         @map("created_by_id") @db.Uuid
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  deletedAt      DateTime?      @map("deleted_at")
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  objectives  ExerciseObjective[]
+  mselEvents  MselEvent[]
+  memberships Membership[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, status])
+  @@index([tenantId, classification])
+  @@map("exercise")
+}
+
+model ExerciseObjective {
+  id             String         @id @default(uuid()) @db.Uuid
+  tenantId       String         @map("tenant_id") @db.Uuid
+  exerciseId     String         @map("exercise_id") @db.Uuid
+  capabilityId   String?        @map("capability_id") @db.Uuid
+  code           String
+  description    String
+  classification Classification @default(internal)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  exercise   Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  capability Capability? @relation(fields: [capabilityId], references: [id], onDelete: SetNull)
+  mselEvents MselEvent[]
+
+  @@unique([exerciseId, code])
+  @@index([tenantId, exerciseId])
+  @@map("exercise_objective")
+}
+
+enum MselInjectMode {
+  push
+  pull
+  conditional
+}
+
+enum MselStatus {
+  draft
+  approved
+  scheduled
+  released
+  acknowledged
+  completed
+  cancelled
+}
+
+/// Master Scenario Events List enligt HSEEP (kravspec §4.3 F-04.1).
+/// Fältnamnen följer HSEEP-konventionen: scenario_time är T+hh:mm,
+/// real_time är wall clock, key_event flaggar avgörande beslutspunkter.
+model MselEvent {
+  id                  String         @id @default(uuid()) @db.Uuid
+  tenantId            String         @map("tenant_id") @db.Uuid
+  exerciseId          String         @map("exercise_id") @db.Uuid
+  objectiveId         String?        @map("objective_id") @db.Uuid
+  capabilityId        String?        @map("capability_id") @db.Uuid
+  eventNo             Int            @map("event_no")
+  scenarioTime        DateTime       @map("scenario_time")
+  realTime            DateTime?      @map("real_time")
+  fromRole            String?        @map("from_role")
+  toRole              String?        @map("to_role")
+  mode                MselInjectMode @default(push)
+  message             String
+  expectedResponse    String?        @map("expected_response")
+  assignedController  String?        @map("assigned_controller")
+  status              MselStatus     @default(draft)
+  keyEvent            Boolean        @default(false) @map("key_event")
+  classification      Classification @default(internal)
+  conditionExpression String?        @map("condition_expression")
+  attachmentKeys      String[]       @default([]) @map("attachment_keys")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+  deletedAt           DateTime?      @map("deleted_at")
+
+  exercise   Exercise           @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  objective  ExerciseObjective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  capability Capability?        @relation(fields: [capabilityId], references: [id], onDelete: SetNull)
+
+  @@unique([exerciseId, eventNo])
+  @@index([exerciseId, scenarioTime])
+  @@index([tenantId, status])
+  @@index([tenantId, classification])
+  @@map("msel_event")
 }
