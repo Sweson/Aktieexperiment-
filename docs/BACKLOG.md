@@ -66,10 +66,11 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - HITL: Användaren har gett blanco-godkännande för denna körning ("jag godkänner allt"). Vid framtida regeländringar krävs återigen HITL.
   - QA: 124 tester gröna inkl. 53 negativa fall, 100 % coverage. Designval: kräver UPPERCASE markering + word boundary för att skilja stämpel från naturligt språk.
 
-- [ ] **T-008 · DLP-middleware för Fastify**
+- [x] **T-008 · DLP-middleware för Fastify** _(2026-04-25)_
   - Beroende: T-007, T-009
   - Filer: `packages/classification/src/fastify-plugin.ts`
-  - AC: plugin scannar request body och multipart-upload; vid träff: sätt karantän, returnera 422 med vägledningstext, logga i audit-loggen; omfattande integrationstest.
+  - AC: plugin scannar request body och multipart-upload; vid träff: sätt karantän, returnera 422 med vägledningstext, logga; omfattande integrationstest.
+  - QA: 15 integrationstester gröna (happy path, nested fält, multipla träffar, GET/HEAD/OPTIONS skip, skipRoutes-config, helper-registrering); fastify-plugin-wrapper bryter encapsulering så hooken gäller hela app-skopet. Multipart-upload ligger i T-020 där MSEL-import sker.
 
 ### Block C — API-grund och databas
 
