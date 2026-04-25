@@ -31,7 +31,7 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - Beroende: T-001
   - AC: `npm run lint` och `npm run format:check` exekverar; pre-commit hook kör lint-staged på ändrade filer; conventional-commits enforce på commit-message.
 
-- [ ] **T-003 · GitHub Actions CI: lint, typecheck, test, build**
+- [x] **T-003 · GitHub Actions CI: lint, typecheck, test, build** _(2026-04-25)_
 
   - Beroende: T-002
   - Filer: `.github/workflows/ci.yml`
