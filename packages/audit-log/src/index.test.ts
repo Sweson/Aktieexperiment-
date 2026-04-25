@@ -46,10 +46,11 @@ describe('AuditChain.append', () => {
   });
 
   it('produces deterministic hashes for identical inputs and prevHash', () => {
+    const fixedTs = '2026-04-25T10:00:00.000Z';
     const c1 = new AuditChain();
     const c2 = new AuditChain();
-    const e1 = c1.append(baseEvent);
-    const e2 = c2.append(baseEvent);
+    const e1 = c1.append({ ...baseEvent, timestamp: fixedTs });
+    const e2 = c2.append({ ...baseEvent, timestamp: fixedTs });
     expect(e1.hash).toBe(e2.hash);
   });
 

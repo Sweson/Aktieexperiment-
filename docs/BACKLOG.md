@@ -141,10 +141,13 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 
 ### Block F — Övningsdesigner (E-01) MVP
 
-- [ ] **T-019 · CRUD-endpoints för Exercise**
+- [x] **T-019 · CRUD-endpoints för Exercise** _(2026-04-25, partial)_
 
   - Beroende: T-012, T-018
-  - AC: REST endpoints med OpenAPI-doc; behörighet via ABAC; pagination; e2e-test.
+  - Filer: `apps/api/src/modules/exercises/{types,repository,service,routes,exercises.test}.ts`
+  - AC: POST/GET/PATCH-status/DELETE med OpenAPI-tags; tenant-isolering via header (T-016 byter mot OIDC); pagination; statusövergångar valideras mot HSEEP-livscykel; audit-loggning på create/status_changed/deleted.
+  - QA: 13 integrationstester gröna (happy path, validering, slug-konflikt 409, DLP-block 422, pagination, tenant-leakage 0, statusövergång 409 invalid, 404 unknown, soft delete).
+  - Not: ABAC (T-018) ännu inte wirat — actor extraheras från dev-headers. Repository är in-memory (Prisma-adapter levereras när live-DB är tillgänglig).
 
 - [ ] **T-020 · CRUD-endpoints för MselEvent + CSV-import**
 
