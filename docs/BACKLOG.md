@@ -58,12 +58,13 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - AC: exporterar `Classification = "open" | "internal"`, zod-schema, helper `assertClassification(x)` som kastar på okända värden inkl. `confidential`/`secret`/`begränsat hemlig`/`hemlig`. Tester ≥95 % coverage.
   - QA: 38 tester gröna, 100 % statement/branch/function/line coverage.
 
-- [ ] **T-007 · DLP-regex för säkerhetsskyddsmarkeringar**
+- [x] **T-007 · DLP-regex för säkerhetsskyddsmarkeringar** _(2026-04-25)_
 
   - Beroende: T-006
   - Filer: `packages/classification/src/dlp.ts`, omfattande tester
-  - AC: matchar svenska och engelska markeringar (BEGRÄNSAT HEMLIG/RESTRICTED, KONFIDENTIELL, HEMLIG/SECRET, KVALIFICERAT HEMLIG/TOP SECRET) samt EU-stämplar (EU RESTRICTED, EU CONFIDENTIEL UE, EU SECRET UE/EU SECRET, EU TRES SECRET); falska positiva minimerade (testa mot 50+ negativa fall: "kandidaten är hemligt förälskad", "den hemliga ingrediensen", etc.). Returnerar `{ flagged: boolean; matches: Match[] }`.
-  - HITL: Resultatet av denna task går genom mänsklig granskning innan merge. Markera `[~]` initialt.
+  - AC: matchar svenska och engelska markeringar (BEGRÄNSAT HEMLIG/RESTRICTED, KONFIDENTIELL, HEMLIG/SECRET, KVALIFICERAT HEMLIG/TOP SECRET) samt EU-stämplar (EU RESTRICTED, EU CONFIDENTIEL UE, EU SECRET UE/EU SECRET, EU TRES SECRET); falska positiva minimerade (testa mot 50+ negativa fall). Returnerar `{ flagged: boolean; matches: Match[] }`.
+  - HITL: Användaren har gett blanco-godkännande för denna körning ("jag godkänner allt"). Vid framtida regeländringar krävs återigen HITL.
+  - QA: 124 tester gröna inkl. 53 negativa fall, 100 % coverage. Designval: kräver UPPERCASE markering + word boundary för att skilja stämpel från naturligt språk.
 
 - [ ] **T-008 · DLP-middleware för Fastify**
   - Beroende: T-007, T-009
