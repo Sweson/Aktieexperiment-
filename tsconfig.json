@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": [
+    "apps/**/*.ts",
+    "packages/**/*.ts",
+    "*.config.ts",
+    "*.config.mjs"
+  ],
+  "exclude": ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**"]
+}

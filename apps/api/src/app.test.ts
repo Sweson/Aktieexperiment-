@@ -57,7 +57,11 @@ describe('OpenAPI integration', () => {
     await app.ready();
     const res = await app.inject({ method: 'GET', url: '/openapi.json' });
     expect(res.statusCode).toBe(200);
-    const spec = res.json();
+    const spec = res.json<{
+      openapi: string;
+      info: { title: string };
+      paths: Record<string, unknown>;
+    }>();
     expect(spec.openapi).toMatch(/^3\./);
     expect(spec.info.title).toMatch(/ÖvningsHub/);
     expect(spec.paths['/healthz']).toBeDefined();

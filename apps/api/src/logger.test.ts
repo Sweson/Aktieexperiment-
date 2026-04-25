@@ -19,10 +19,9 @@ describe('buildLoggerOptions', () => {
 
   it('configures redact paths and censor', () => {
     const opts = buildLoggerOptions({});
-    expect(opts.redact).toMatchObject({
-      paths: expect.arrayContaining(['password', 'token', 'authorization']),
-      censor: '[REDACTED]',
-    });
+    const redact = opts.redact as { paths: string[]; censor: string };
+    expect(redact.paths).toEqual(expect.arrayContaining(['password', 'token', 'authorization']));
+    expect(redact.censor).toBe('[REDACTED]');
   });
 
   it('exports common PII fields in the redaction list', () => {

@@ -13,7 +13,7 @@ export interface DlpPluginOptions {
 export interface DlpRejectionPayload {
   error: 'classification_violation';
   message: string;
-  matches: Array<{ field: string; label: string; value: string }>;
+  matches: { field: string; label: string; value: string }[];
   guidance: string;
 }
 
@@ -63,6 +63,7 @@ function scanRequestBody(body: unknown): FieldMatch[] {
   return found;
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- fastify plugin signature requires async
 const dlpPlugin: FastifyPluginAsync<DlpPluginOptions> = async (app, opts) => {
   const skipRoutes = new Set([...DEFAULT_SKIP, ...(opts.skipRoutes ?? [])]);
 

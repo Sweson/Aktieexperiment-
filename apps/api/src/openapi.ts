@@ -42,5 +42,5 @@ export async function registerOpenApi(app: FastifyInstance): Promise<void> {
     },
   });
 
-  app.get('/openapi.json', { schema: { hide: true } }, async () => app.swagger());
+  app.get('/openapi.json', { schema: { hide: true } }, () => app.swagger());
 }

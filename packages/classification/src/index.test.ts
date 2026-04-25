@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import type {
+  Classification} from './index.js';
 import {
-  Classification,
   ClassificationSchema,
   assertClassification,
   isClassification,

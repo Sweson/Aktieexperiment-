@@ -57,14 +57,14 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     await registerOpenApi(app);
   }
 
-  app.get('/healthz', HEALTHZ_SCHEMA, async () => ({ status: 'ok' }));
+  app.get('/healthz', HEALTHZ_SCHEMA, () => ({ status: 'ok' as const }));
 
-  app.get('/readyz', READYZ_SCHEMA, async (_req, reply) => {
+  app.get('/readyz', READYZ_SCHEMA, (_req, reply) => {
     const ready = options.readinessProbe ? options.readinessProbe() : true;
     if (!ready) {
-      return reply.code(503).send({ status: 'not_ready' });
+      return reply.code(503).send({ status: 'not_ready' as const });
     }
-    return { status: 'ready' };
+    return { status: 'ready' as const };
   });
 
   return app;
