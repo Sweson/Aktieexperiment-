@@ -43,10 +43,11 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - Filer: `.github/workflows/security.yml`, `.semgrep.yml`, `.gitleaks.toml`
   - AC: alla fyra scans kör på PR; SBOM (CycloneDX) uppladdas som artifact; gitleaks ren; högsta tillåtna severity som inte failar är Low.
 
-- [ ] **T-005 · Docker-compose för lokal dev (Postgres, NATS, MinIO, MailHog)**
+- [x] **T-005 · Docker-compose för lokal dev (Postgres, NATS, MinIO, MailHog, Keycloak)** _(2026-04-25)_
   - Beroende: T-001
   - Filer: `docker-compose.yml`, `.env.example`
   - AC: `docker compose up` startar alla tjänster; healthchecks gröna inom 30 s; volymer namngivna persistenta.
+  - Not: Keycloak inkluderat i förväg för T-016 (OIDC-anslutning).
 
 ### Block B — Klassmodell och DLP (E-10) — säkerhetskritisk
 
