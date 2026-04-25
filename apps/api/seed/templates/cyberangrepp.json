@@ -1,0 +1,55 @@
+{
+  "templateId": "cyberangrepp-kommun-2026",
+  "title": "Ransomware mot kommunal IT",
+  "msbTypEvent": "antagonistisk.cyber",
+  "format": "functional",
+  "summary": "Functional exercise där en kommun utsätts för ransomware-angrepp som krypterar löneadministration och välfärdssystem. Fokus på krishantering, NIS2-incidentrapportering och kommunikation med medborgare. Inga säkerhetsskyddsklassade detaljer — scenariot håller sig på öppen/intern nivå.",
+  "objectives": [
+    {
+      "code": "M1",
+      "description": "Aktivera CSIRT-team och isolera drabbade system inom 30 min."
+    },
+    {
+      "code": "M2",
+      "description": "NIS2 24h-rapport till MSB inom utsatt tid."
+    },
+    {
+      "code": "M3",
+      "description": "Återställa lönelista i tid till löneutbetalning."
+    },
+    {
+      "code": "M4",
+      "description": "Hantera kommunikation utan att skapa panik eller läcka känslig information."
+    }
+  ],
+  "mselSeed": [
+    {
+      "eventNo": 1,
+      "scenarioTimeOffsetMinutes": 0,
+      "fromRole": "sim_cell",
+      "toRole": "exercise_director",
+      "mode": "push",
+      "message": "IT-driften rapporterar att lönesystemet visar lösenkravsmeddelande. Filsystem krypterat med .locked-suffix.",
+      "expectedResponse": "Aktivera incidenthanteringsplan. Isolera system."
+    },
+    {
+      "eventNo": 2,
+      "scenarioTimeOffsetMinutes": 45,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "push",
+      "message": "Lokaljournalist har fått tipset och vill ha kommentar inom 15 min.",
+      "expectedResponse": "Aktivera kommunikationsplan. Förbered kort statement."
+    },
+    {
+      "eventNo": 3,
+      "scenarioTimeOffsetMinutes": 1440,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "push",
+      "message": "24h-deadline för NIS2-rapport till MSB närmar sig.",
+      "expectedResponse": "Skicka in inledande rapport via MCF IRON."
+    }
+  ],
+  "classification": "internal"
+}

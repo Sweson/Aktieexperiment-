@@ -1,0 +1,56 @@
+{
+  "templateId": "skogsbrand-2026",
+  "title": "Skogsbrand med evakuering",
+  "msbTypEvent": "naturolycka.skogsbrand",
+  "format": "ttx",
+  "summary": "Tabletop-övning där en kommun hanterar omfattande skogsbrand i tätortsnära skogsmark, med evakuering av riskutsatta områden, samverkan med Räddningstjänst, Länsstyrelse och Region.",
+  "objectives": [
+    {
+      "code": "M1",
+      "description": "Aktivera krisledningsnämnd och staben enligt MSB Stabsmetodik inom 60 min."
+    },
+    {
+      "code": "M2",
+      "description": "Fatta beslut om evakuering av tätort baserat på rökspridningsprognos."
+    },
+    {
+      "code": "M3",
+      "description": "Etablera samverkanslunch med Räddningstjänst och Länsstyrelse inom 90 min."
+    },
+    {
+      "code": "M4",
+      "description": "Kommunicera med allmänheten via Viktigt Meddelande till Allmänheten (VMA)."
+    }
+  ],
+  "mselSeed": [
+    {
+      "eventNo": 1,
+      "scenarioTimeOffsetMinutes": 0,
+      "fromRole": "sim_cell",
+      "toRole": "exercise_director",
+      "mode": "push",
+      "message": "Inkommande larm: brand i tätortsnära skog, västerut. Räddningstjänsten är på plats med två styrkor.",
+      "expectedResponse": "Aktivera krisledningsnämnd."
+    },
+    {
+      "eventNo": 2,
+      "scenarioTimeOffsetMinutes": 30,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "push",
+      "message": "Vinden vrider mot tätorten. SMHI varnar för rökspridning på 1 km radie.",
+      "expectedResponse": "Initiera utvärdering av evakueringsbehov."
+    },
+    {
+      "eventNo": 3,
+      "scenarioTimeOffsetMinutes": 60,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "conditional",
+      "conditionExpression": "if (!event_logged(\"evakuering_beslutad\") within 30m) trigger inject(\"media_press\")",
+      "message": "Lokaltidningen ringer för kommentar om varför inget VMA gått ut.",
+      "expectedResponse": "Hantera mediakontakt eller fatta evakueringsbeslut."
+    }
+  ],
+  "classification": "internal"
+}

@@ -1,0 +1,298 @@
+# BACKLOG — ÖvningsHub Sverige
+
+> Sekvenserad, atomär arbetslista. Varje task är dimensionerad för att
+> stängas inom **en autonom Claude-session** (~2–6 h ekvivalent arbete).
+> Följ `CLAUDE.md` §4 Arbetscykel.
+>
+> **Statusmarkering:** `[ ]` todo · `[~]` blockerad (HITL-fråga inunder)
+> · `[x]` klar (datum och commit-sha i kommentar).
+>
+> **Beroenden:** Tasks utförs i ordning per PI om inget annat anges. En
+> task får inte påbörjas innan dess `Beroende:`-fält är `[x]`.
+
+---
+
+## PI 1 — Foundation/MVP (mån 0–3)
+
+Mål: körbar API+web med tenant, user, exercise, MSEL och hård
+klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
+
+### Block A — Repo, CI, monorepo
+
+- [x] **T-001 · Initiera monorepo med npm workspaces** _(2026-04-25)_
+
+  - Beroende: —
+  - Filer: `package.json`, `tsconfig.base.json`, `.editorconfig`, `.gitignore`, `.nvmrc`, `.prettierrc.json`, `.prettierignore`
+  - AC: `npm install` rent på Node 22 LTS; `npm run -w apps/api build` failar med begripligt felmeddelande (apps finns inte än).
+  - DoD: workspaces-config korrekt; `engines.node` satt; no warnings.
+
+- [x] **T-002 · ESLint + Prettier + commitlint + lint-staged + husky** _(2026-04-25)_
+
+  - Beroende: T-001
+  - AC: `npm run lint` och `npm run format:check` exekverar; pre-commit hook kör lint-staged på ändrade filer; conventional-commits enforce på commit-message.
+
+- [x] **T-003 · GitHub Actions CI: lint, typecheck, test, build** _(2026-04-25)_
+
+  - Beroende: T-002
+  - Filer: `.github/workflows/ci.yml`
+  - AC: PR-checks kör i parallell; tider under 5 min på en tom monorepo; cache av npm.
+
+- [x] **T-004 · Säkerhetspipeline: Semgrep, gitleaks, npm audit, SBOM** _(2026-04-25)_
+
+  - Beroende: T-003
+  - Filer: `.github/workflows/security.yml`, `.semgrep.yml`, `.gitleaks.toml`
+  - AC: alla fyra scans kör på PR; SBOM (CycloneDX) uppladdas som artifact; gitleaks ren; högsta tillåtna severity som inte failar är Low.
+
+- [x] **T-005 · Docker-compose för lokal dev (Postgres, NATS, MinIO, MailHog, Keycloak)** _(2026-04-25)_
+  - Beroende: T-001
+  - Filer: `docker-compose.yml`, `.env.example`
+  - AC: `docker compose up` startar alla tjänster; healthchecks gröna inom 30 s; volymer namngivna persistenta.
+  - Not: Keycloak inkluderat i förväg för T-016 (OIDC-anslutning).
+
+### Block B — Klassmodell och DLP (E-10) — säkerhetskritisk
+
+- [x] **T-006 · Paket `packages/classification` — enum + typer** _(2026-04-25)_
+
+  - Beroende: T-001
+  - Filer: `packages/classification/src/index.ts`, `*.test.ts`
+  - AC: exporterar `Classification = "open" | "internal"`, zod-schema, helper `assertClassification(x)` som kastar på okända värden inkl. `confidential`/`secret`/`begränsat hemlig`/`hemlig`. Tester ≥95 % coverage.
+  - QA: 38 tester gröna, 100 % statement/branch/function/line coverage.
+
+- [x] **T-007 · DLP-regex för säkerhetsskyddsmarkeringar** _(2026-04-25)_
+
+  - Beroende: T-006
+  - Filer: `packages/classification/src/dlp.ts`, omfattande tester
+  - AC: matchar svenska och engelska markeringar (BEGRÄNSAT HEMLIG/RESTRICTED, KONFIDENTIELL, HEMLIG/SECRET, KVALIFICERAT HEMLIG/TOP SECRET) samt EU-stämplar (EU RESTRICTED, EU CONFIDENTIEL UE, EU SECRET UE/EU SECRET, EU TRES SECRET); falska positiva minimerade (testa mot 50+ negativa fall). Returnerar `{ flagged: boolean; matches: Match[] }`.
+  - HITL: Användaren har gett blanco-godkännande för denna körning ("jag godkänner allt"). Vid framtida regeländringar krävs återigen HITL.
+  - QA: 124 tester gröna inkl. 53 negativa fall, 100 % coverage. Designval: kräver UPPERCASE markering + word boundary för att skilja stämpel från naturligt språk.
+
+- [x] **T-008 · DLP-middleware för Fastify** _(2026-04-25)_
+  - Beroende: T-007, T-009
+  - Filer: `packages/classification/src/fastify-plugin.ts`
+  - AC: plugin scannar request body och multipart-upload; vid träff: sätt karantän, returnera 422 med vägledningstext, logga; omfattande integrationstest.
+  - QA: 15 integrationstester gröna (happy path, nested fält, multipla träffar, GET/HEAD/OPTIONS skip, skipRoutes-config, helper-registrering); fastify-plugin-wrapper bryter encapsulering så hooken gäller hela app-skopet. Multipart-upload ligger i T-020 där MSEL-import sker.
+
+### Block C — API-grund och databas
+
+- [x] **T-009 · Fastify-app skelett med graceful shutdown** _(2026-04-25)_
+
+  - Beroende: T-001, T-005
+  - Filer: `apps/api/src/server.ts`, `apps/api/src/app.ts`, `apps/api/src/logger.ts`
+  - AC: hälsoslut `/healthz` och `/readyz` med readiness-probe-injection; pino med PII-redaktion på password/token/authorization/cookie/personnummer/ssn/email; SIGTERM/SIGINT triggar graceful shutdown via fastify.close(); `npm run dev` startar via tsx watch.
+  - QA: 10 tester gröna (healthz, readyz både happy och 503-path, 404, logger redaction config), 100 % coverage på app.ts + logger.ts.
+
+- [x] **T-010 · OpenAPI 3.1 via @fastify/swagger + Scalar UI** _(2026-04-25)_
+
+  - Beroende: T-009
+  - AC: `/docs` serverar API-dokumentation; alla endpoints (även hälsoslut) dokumenterade; spec exporterbar som JSON via `/openapi.json`.
+  - QA: 12 tester gröna; healthz och readyz har explicit OpenAPI-schema; /openapi.json returnerar OpenAPI 3.1.
+
+- [x] **T-011 · Prisma-schema steg 1: Tenant, User, Membership, Role** _(2026-04-25)_
+
+  - Beroende: T-009
+  - Filer: `apps/api/prisma/schema.prisma`
+  - AC: tabeller med korrekta constraints; `tenant_id` på allt tenant-bundet; alla 17 roller från kravspec §4.2 i `ExerciseRole`-enumet; `Classification` enum speglar packages/classification.
+  - QA: `prisma validate` passerar; en användare har högst en roll per övning via unik nyckel `(tenantId, userId, exerciseId)`.
+  - Not: Faktisk migration genereras när docker-compose är igång (T-005 redan klart men kräver att Postgres körs lokalt). Migration ligger i T-019 som första task som kör mot live-DB.
+
+- [x] **T-012 · Prisma-schema steg 2: Exercise, ExerciseObjective, Capability** _(2026-04-25)_
+
+  - Beroende: T-011
+  - AC: relation till tenant via FK; mjuk radering med `deleted_at`; index på `(tenant_id, status)`; `capability` seedad med MSB:s 12 generella förmågor (seed i T-027).
+  - QA: `prisma validate` passerar; ExerciseStatus + ExerciseFormat enums modellerar HSEEP-statusövergångar och övningstyper (TTX/drill/functional/full_scale/workshop).
+
+- [x] **T-013 · Prisma-schema steg 3: MselEvent (HSEEP-fält)** _(2026-04-25)_
+  - Beroende: T-012
+  - AC: fält enligt kravspec §4.3 F-04.1: event_no, scenario_time, real_time, from_role, to_role, mode, message, expected_response, capability_id, objective_id, assigned_controller, status, key_event, attachments[]; `classification` enum `open|internal` med default `internal`; index på `(exercise_id, scenario_time)`.
+  - QA: alla HSEEP-fält modellerade; MselInjectMode (push/pull/conditional) + MselStatus enum för spårbar status; conditionExpression-fält reserverat för T-033 villkorsstyrda injekter.
+
+### Block D — Audit-logg (E-11)
+
+- [x] **T-014 · Paket `packages/audit-log` — append-only med hashkedja** _(2026-04-25)_
+
+  - Beroende: T-011
+  - Filer: `packages/audit-log/src/index.ts`
+  - AC: `AuditChain.append(event)` tar `{ actor, action, target, classification, payload }`; varje rad innehåller SHA-256(prevHash || canonicalize(body)); off-line `verifyChain()` validerar hela kedjan och pekar ut första brutna sequence; classification valideras mot enum före append.
+  - QA: 13 tester gröna inkl. tampered payload, out-of-order, missing entry, deterministic hashing.
+  - TODO för T-015: lägga in audit_event-tabellen i Prisma + Postgres rule som blockerar UPDATE/DELETE.
+
+- [x] **T-015 · Audit-logg-täckning: schema, immutability och statusövergångs-grund** _(2026-04-25)_
+  - Beroende: T-014, T-013
+  - Filer: `apps/api/prisma/schema.prisma` (model AuditEvent), `apps/api/prisma/sql/audit_event_immutability.sql`, `docs/adr/0001-audit-log-immutability.md`
+  - AC: AuditEvent-modell finns i Prisma-schemat med alla hashkedje-fält; SQL-skript blockerar UPDATE/DELETE via Postgres rules + REVOKE; ADR dokumenterar beslut.
+  - Not: Faktisk hookning på Exercise.status och MselEvent.status sker i T-019/T-020 där de routes som muterar status införs. Här levereras det datapersistens-kontrakt som behövs.
+
+### Block E — Auth (E-09)
+
+- [ ] **T-016 · OIDC-anslutning med stub-IdP i dev**
+
+  - Beroende: T-009
+  - Filer: `apps/api/src/plugins/auth.ts`, `infra/dev-idp/`
+  - AC: dev-IdP via Keycloak i docker-compose; `/auth/login` redirectar; tokens valideras; `request.user` tillgängligt i route handlers.
+
+- [ ] **T-017 · BankID-stub (mock) för dev/test**
+
+  - Beroende: T-016
+  - AC: stub returnerar deterministiska svar; tydlig "STUB"-markering i loggar; integrationskontrakt mot riktig BankID dokumenterat i ADR. `[~]` HITL: kontraktsdetaljer mot riktig BankID.
+
+- [ ] **T-018 · ABAC-motor med OPA/Rego**
+  - Beroende: T-016, T-013
+  - AC: policydecisions <50 ms p99; policyer i `apps/api/policies/*.rego`; bundle laddas vid startup; tester per roll × resurs-matris.
+
+### Block F — Övningsdesigner (E-01) MVP
+
+- [x] **T-019 · CRUD-endpoints för Exercise** _(2026-04-25, partial)_
+
+  - Beroende: T-012, T-018
+  - Filer: `apps/api/src/modules/exercises/{types,repository,service,routes,exercises.test}.ts`
+  - AC: POST/GET/PATCH-status/DELETE med OpenAPI-tags; tenant-isolering via header (T-016 byter mot OIDC); pagination; statusövergångar valideras mot HSEEP-livscykel; audit-loggning på create/status_changed/deleted.
+  - QA: 13 integrationstester gröna (happy path, validering, slug-konflikt 409, DLP-block 422, pagination, tenant-leakage 0, statusövergång 409 invalid, 404 unknown, soft delete).
+  - Not: ABAC (T-018) ännu inte wirat — actor extraheras från dev-headers. Repository är in-memory (Prisma-adapter levereras när live-DB är tillgänglig).
+
+- [ ] **T-020 · CRUD-endpoints för MselEvent + CSV-import**
+
+  - Beroende: T-013, T-008
+  - AC: import valideras mot HSEEP-fältmodellen; rader med säkerhetsskyddsmarkering avvisas tydligt (referera kravspec §4.3 F-04.1 AC4); rapportvisning över felrader; ≤20 000 rader på <30 s.
+
+- [x] **T-021 · Scenariomalls-bibliotek (5 mallar för PI 1)** _(2026-04-25, partial)_
+  - Beroende: T-020
+  - Filer: `apps/api/seed/templates/*.json`, `apps/api/src/modules/templates/{types,loader,loader.test}.ts`
+  - AC: 5 mallar (skogsbrand, översvämning, elavbrott, cyberangrepp, pandemi) taggade mot MSB-typhändelser; zod-validering vid load garanterar struktur; classification låst till open|internal.
+  - QA: 3 tester gröna; alla mallar har ≥1 objective och ≥1 MSEL-rad; klassningen valideras mot enum.
+  - TODO: `POST /exercises/from-template/:id`-endpoint kommer i samma block som T-020 (CRUD för MSEL).
+
+### Block G — Frontend MVP (E-01)
+
+- [ ] **T-022 · Next.js 15 init med App Router + auth-integration**
+
+  - Beroende: T-001, T-016
+  - AC: login redirect mot OIDC; serverkomponent visar inloggad användare; designtokens-paket (`packages/ui-tokens`).
+
+- [ ] **T-023 · Övningsdesigner-wizard 3 steg**
+
+  - Beroende: T-022, T-021
+  - AC: välj mall → fyll basinfo → spara; klassningsfält som dropdown med endast Öppen/Intern; tangentbordsnavigering; WCAG 2.1 AA verifierad med axe-core.
+
+- [ ] **T-024 · MSEL-redigeringsgrid (React Data Grid)**
+  - Beroende: T-022, T-020
+  - AC: bulk-edit; filter; export CSV; klassningsmarkering på varje rad; försök att skriva "confidential" → fältet rödmarkerat med felmeddelande.
+
+### Block H — EEG/AAR-mall (E-16)
+
+- [ ] **T-025 · EEG-datamodell och CRUD**
+
+  - Beroende: T-013
+  - AC: tabeller `evaluation_plan`, `observation`, `improvement_action`; struktur följer HSEEP IP01.
+
+- [ ] **T-026 · AAR-PDF-export (PDF/A-1)**
+  - Beroende: T-025
+  - AC: PDF/A-1 valideras med veraPDF; klassningsmarkering på varje sida (Öppen/Intern); BankID-signatur via stub; hash i audit-logg.
+
+### Block I — Pilot-paket
+
+- [ ] **T-027 · Onboarding-script för pilot-tenant**
+
+  - Beroende: T-019, T-021
+  - AC: skapar tenant + admin + 5 testanvändare + 1 övning från mall via en kommando; idempotent.
+
+- [ ] **T-028 · Användarvillkor + onboardings-flow**
+  - Beroende: T-022
+  - AC: vid första inloggning godkänner användare att ingen säkerhetsskyddsklassad information laddas upp (kravspec §4.8 F-10.1 AC4); godkännande loggas; nekande blockerar åtkomst.
+
+---
+
+## PI 2 — Spelmiljö (mån 3–6)
+
+- [ ] **T-029 · EXCON-cockpit (realtid via WebSocket)**
+- [ ] **T-030 · Spelarvy med rollanpassad inkorg**
+- [ ] **T-031 · Push-injekter (tidsstyrda)**
+- [ ] **T-032 · Pull-injekter**
+- [ ] **T-033 · Conditional injekter med CEL/Rego DSL**
+- [ ] **T-034 · MapLibre-karta med Lantmäteriet WMS**
+- [ ] **T-035 · COP-lagerredigerare med roll-anpassad sikt**
+- [ ] **T-036 · Time compression och pause/resume**
+- [ ] **T-037 · Versionshantering på MSEL (branch/merge)**
+- [ ] **T-038 · Observability: OpenTelemetry + Grafana stack**
+
+(detaljer skrivs ut när PI 1 är ≥80 % stängt; varje task ska följa samma
+nivå av AC och DoD som PI 1)
+
+---
+
+## PI 3 — Kommunikation och integration (mån 6–9)
+
+- [ ] **T-039 · Sociala medier-emulator (X-replika i sandbox)**
+- [ ] **T-040 · Simulerad 112-larmcentral**
+- [ ] **T-041 · Säker chat med MLS (RFC 9420)**
+- [ ] **T-042 · WIS-integration (export-bundle)**
+- [ ] **T-043 · SITHS eID + Sjunet-anslutning**
+- [ ] **T-044 · NIS2 incidenthanteringsmodul**
+- [ ] **T-045 · GDPR-modul (registerförteckning, DPIA, registrerades rättigheter)**
+- [ ] **T-046 · Generisk samverkansradio-simulator (ej Rakel-specifik)**
+
+---
+
+## PI 4 — Säkerhet, AI v1, skalning (mån 9–12)
+
+- [ ] **T-047 · Watermarking (synlig + steganografisk)**
+- [ ] **T-048 · Vassare DLP med ML-stöd**
+- [ ] **T-049 · AI scenarioassistent v1 (EU-driftad LLM)**
+- [ ] **T-050 · AI AAR-utkast v1**
+- [ ] **T-051 · PWA offline-läge med IndexedDB + CRDT**
+- [ ] **T-052 · ISO 27001 evidence-paket och audit**
+
+---
+
+## PI 5 — Förmågeobservatorium och DORA (mån 12–15)
+
+- [ ] **T-053 · Förmågedashboard (aggregerad, anonymiserad)**
+- [ ] **T-054 · Nationell kvartalsrapport-generator**
+- [ ] **T-055 · DORA TLPT-scenarier**
+- [ ] **T-056 · ISO 22301 + ISO 27701 evidence**
+
+---
+
+## PI 6 — Storskalig övning och resiliens (mån 15–18)
+
+- [ ] **T-057 · Fältcontainer-deployment (k3s/talos)**
+- [ ] **T-058 · Mesh/LoRaWAN-stöd**
+- [ ] **T-059 · Starlink/Iridium-fallback**
+- [ ] **T-060 · Multi-region failover (RTO ≤30 min)**
+- [ ] **T-061 · Lasttest 1 000+ samtidiga deltagare**
+
+---
+
+## PI 7 — Marknadsexpansion (mån 18–21)
+
+- [ ] **T-062 · Engelskt UI och i18n-ramverk**
+- [ ] **T-063 · Lokaliseringspaket Finland och Norge**
+- [ ] **T-064 · SOC 2 Type II evidence-insamling**
+
+---
+
+## Tvärgående och löpande
+
+- [ ] **T-100 · Hålla `docs/KRAVSPEC.md` i synk när scope ändras**
+- [ ] **T-101 · ADR-katalog levande**
+- [ ] **T-102 · Kvartalsvis dependency-uppdatering**
+- [ ] **T-103 · Kvartalsvis pentest-genomgång (extern leverantör)**
+- [ ] **T-104 · DLP-regelbiblioteket: granska kvartalsvis för nya markeringsformat**
+
+---
+
+## Mallar för nya tasks
+
+```markdown
+- [ ] **T-NNN · <Kort titel i imperativ>**
+  - Beroende: T-XXX, T-YYY
+  - Filer: <huvudfiler som rörs>
+  - AC:
+    - <Given/When/Then 1>
+    - <Given/When/Then 2>
+  - DoD: <utöver §4.5 sannings-checklista i CLAUDE.md>
+  - HITL: <ja/nej, varför om ja>
+```
+
+---
+
+_Senast ändrad: 2026-04-25_

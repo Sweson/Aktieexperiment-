@@ -1,0 +1,28 @@
+{
+  "name": "@ovh/audit-log",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Append-only audit log med hashkedja (CLAUDE.md §1.6)",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ovh/classification": "*"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "2.1.4",
+    "vitest": "2.1.4"
+  }
+}

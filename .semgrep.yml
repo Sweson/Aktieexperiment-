@@ -1,0 +1,37 @@
+rules:
+  - id: ovh-no-hardcoded-classification-bypass
+    pattern-either:
+      - pattern: |
+          classification = "confidential"
+      - pattern: |
+          classification = "secret"
+      - pattern: |
+          classification = "top_secret"
+      - pattern: |
+          classification = "begränsat hemlig"
+      - pattern: |
+          classification = "hemlig"
+    message: |
+      Klassningsvärde över "internal" hittat. Plattformen får endast
+      hantera "open" eller "internal" enligt CLAUDE.md §1 hårda regler.
+      Säkerhetsskyddslagen 2018:585 gäller.
+    severity: ERROR
+    languages: [typescript, javascript]
+
+  - id: ovh-no-disabled-dlp
+    pattern-either:
+      - pattern: dlp.disable()
+      - pattern: dlpEnabled = false
+      - pattern: |
+          // dlp:disable
+    message: DLP får inte stängas av i produktionskod (CLAUDE.md §1.1).
+    severity: ERROR
+    languages: [typescript, javascript]
+
+  - id: ovh-no-eval
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+    message: Dynamisk kodexekvering förbjuden (OWASP A03:2021 Injection).
+    severity: ERROR
+    languages: [typescript, javascript]
