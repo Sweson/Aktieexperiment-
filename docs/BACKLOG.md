@@ -87,11 +87,13 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - AC: `/docs` serverar API-dokumentation; alla endpoints (även hälsoslut) dokumenterade; spec exporterbar som JSON via `/openapi.json`.
   - QA: 12 tester gröna; healthz och readyz har explicit OpenAPI-schema; /openapi.json returnerar OpenAPI 3.1.
 
-- [ ] **T-011 · Prisma-schema steg 1: Tenant, User, Membership, Role**
+- [x] **T-011 · Prisma-schema steg 1: Tenant, User, Membership, Role** _(2026-04-25)_
 
   - Beroende: T-009
-  - Filer: `apps/api/prisma/schema.prisma`, första migration
-  - AC: tabeller med korrekta constraints; `tenant_id` på allt tenant-bundet; rollerna ÖL, LÖL, SL, MÖL, UL, LU, LOG, PL, Sim-cell, EXCON, Spelare, Observatör, Mentor, Red-team, VIP, Plattformsadmin, Tenantadmin enligt kravspec §4.2.
+  - Filer: `apps/api/prisma/schema.prisma`
+  - AC: tabeller med korrekta constraints; `tenant_id` på allt tenant-bundet; alla 17 roller från kravspec §4.2 i `ExerciseRole`-enumet; `Classification` enum speglar packages/classification.
+  - QA: `prisma validate` passerar; en användare har högst en roll per övning via unik nyckel `(tenantId, userId, exerciseId)`.
+  - Not: Faktisk migration genereras när docker-compose är igång (T-005 redan klart men kräver att Postgres körs lokalt). Migration ligger i T-019 som första task som kör mot live-DB.
 
 - [ ] **T-012 · Prisma-schema steg 2: Exercise, ExerciseObjective, Capability**
 

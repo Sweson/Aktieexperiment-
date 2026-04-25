@@ -1,0 +1,115 @@
+// ÖvningsHub Sverige · Prisma schema
+//
+// Källa: docs/KRAVSPEC.md §4.2 (Multi-tenant och rollramverk)
+// och CLAUDE.md §1 (klassmodellen är två nivåer).
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Tillåtna klassningsvärden. SPEGLAS i `packages/classification/src/index.ts`.
+/// Att utöka detta enum är en HITL-gate (CLAUDE.md §5.1).
+enum Classification {
+  open
+  internal
+}
+
+/// Hierarkityper för svensk civil beredskapsstruktur. Försvarssektorn
+/// är medvetet inte modellerad (kravspec §4.2 F-02.1).
+enum OrganizationKind {
+  national
+  preparedness_sector
+  civil_area
+  county_administrative_board
+  region
+  state_authority
+  municipality
+  business
+  healthcare_provider
+  ngo
+  unit
+}
+
+/// Roller enligt MSB Övningsvägledning + HSEEP. Kravspec §4.2 F-02.2.
+enum ExerciseRole {
+  exercise_director // ÖL
+  local_exercise_director // LÖL
+  game_director // SL
+  module_exercise_director // MÖL
+  evaluation_director // UL
+  local_evaluator // LU
+  logistics // LOG
+  planner // PL
+  sim_cell
+  excon
+  player
+  observer
+  mentor
+  red_team // i etisk-hacking-mening
+  vip
+  platform_admin
+  tenant_admin
+}
+
+model Tenant {
+  id        String           @id @default(uuid()) @db.Uuid
+  slug      String           @unique
+  name      String
+  kind      OrganizationKind
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  deletedAt DateTime?        @map("deleted_at")
+
+  users       User[]
+  memberships Membership[]
+
+  @@index([kind])
+  @@map("tenant")
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  email         String
+  givenName     String    @map("given_name")
+  familyName    String    @map("family_name")
+  oidcSubject   String?   @unique @map("oidc_subject")
+  bankIdSubject String?   @unique @map("bankid_subject")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  memberships Membership[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("user")
+}
+
+/// Koppling mellan användare och en specifik övning eller globalt över
+/// tenanten. För platformsadmin/tenantadmin kan exerciseId vara null.
+model Membership {
+  id         String       @id @default(uuid()) @db.Uuid
+  tenantId   String       @map("tenant_id") @db.Uuid
+  userId     String       @map("user_id") @db.Uuid
+  role       ExerciseRole
+  exerciseId String?      @map("exercise_id") @db.Uuid
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// En användare får högst en roll per övning (kravspec §4.2 F-02.2 AC1).
+  @@unique([tenantId, userId, exerciseId])
+  @@index([tenantId, role])
+  @@index([userId])
+  @@map("membership")
+}

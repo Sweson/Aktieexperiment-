@@ -17,6 +17,7 @@
   "dependencies": {
     "@fastify/swagger": "9.2.0",
     "@ovh/classification": "*",
+    "@prisma/client": "5.21.1",
     "@scalar/fastify-api-reference": "1.25.116",
     "fastify": "5.0.0",
     "pino": "9.5.0",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@types/node": "22.7.7",
     "@vitest/coverage-v8": "2.1.4",
+    "prisma": "5.21.1",
     "tsx": "4.19.1",
     "vitest": "2.1.4"
   }
