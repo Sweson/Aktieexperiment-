@@ -154,10 +154,12 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - Beroende: T-013, T-008
   - AC: import valideras mot HSEEP-fältmodellen; rader med säkerhetsskyddsmarkering avvisas tydligt (referera kravspec §4.3 F-04.1 AC4); rapportvisning över felrader; ≤20 000 rader på <30 s.
 
-- [ ] **T-021 · Scenariomalls-bibliotek (5 mallar för PI 1)**
+- [x] **T-021 · Scenariomalls-bibliotek (5 mallar för PI 1)** _(2026-04-25, partial)_
   - Beroende: T-020
-  - Filer: `apps/api/seed/templates/*.json`
-  - AC: mallar för "skogsbrand", "översvämning", "elavbrott", "cyberangrepp mot kommun", "pandemi"; alla taggade mot MSB-typhändelser; klona-funktion via endpoint `POST /exercises/from-template/:id`.
+  - Filer: `apps/api/seed/templates/*.json`, `apps/api/src/modules/templates/{types,loader,loader.test}.ts`
+  - AC: 5 mallar (skogsbrand, översvämning, elavbrott, cyberangrepp, pandemi) taggade mot MSB-typhändelser; zod-validering vid load garanterar struktur; classification låst till open|internal.
+  - QA: 3 tester gröna; alla mallar har ≥1 objective och ≥1 MSEL-rad; klassningen valideras mot enum.
+  - TODO: `POST /exercises/from-template/:id`-endpoint kommer i samma block som T-020 (CRUD för MSEL).
 
 ### Block G — Frontend MVP (E-01)
 

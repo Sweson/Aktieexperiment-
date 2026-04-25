@@ -1,0 +1,46 @@
+{
+  "templateId": "pandemi-2026",
+  "title": "Smittsam luftvägsinfektion med hög dödlighet",
+  "msbTypEvent": "halsa.pandemi",
+  "format": "ttx",
+  "summary": "Tabletop för region/kommun där en ny luftvägsinfektion sprider sig snabbt. Fokus på vårdens kapacitet, samverkan med Folkhälsomyndigheten, kommunal smittspårning och samhällskommunikation. Anpassat för icke-säkerhetsskyddad katastrofmedicinsk beredskap.",
+  "objectives": [
+    {
+      "code": "M1",
+      "description": "Aktivera särskild sjukvårdsledning enligt SOSFS 2013:22."
+    },
+    {
+      "code": "M2",
+      "description": "Skala upp IVA-platser i regionen med 100 % på 72 h."
+    },
+    {
+      "code": "M3",
+      "description": "Etablera kommunal smittskyddssamverkan med MSB:s typhändelseguide."
+    },
+    {
+      "code": "M4",
+      "description": "Hantera vaccinationsprioritering och kommunikation till riskgrupper."
+    }
+  ],
+  "mselSeed": [
+    {
+      "eventNo": 1,
+      "scenarioTimeOffsetMinutes": 0,
+      "fromRole": "sim_cell",
+      "toRole": "exercise_director",
+      "mode": "push",
+      "message": "Folkhälsomyndigheten rapporterar 50 verifierade fall av ny luftvägsinfektion i regionen.",
+      "expectedResponse": "Aktivera särskild sjukvårdsledning."
+    },
+    {
+      "eventNo": 2,
+      "scenarioTimeOffsetMinutes": 360,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "push",
+      "message": "Två sjukhus rapporterar att IVA-kapaciteten är full.",
+      "expectedResponse": "Aktivera regional samverkan för platsförflyttning."
+    }
+  ],
+  "classification": "internal"
+}

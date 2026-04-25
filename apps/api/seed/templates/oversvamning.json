@@ -1,0 +1,42 @@
+{
+  "templateId": "oversvamning-2026",
+  "title": "Översvämning vid kustkommun",
+  "msbTypEvent": "naturolycka.oversvamning",
+  "format": "functional",
+  "summary": "Functional exercise där en kustkommun hanterar stigande havsnivåer i kombination med kraftig nederbörd, med fokus på dricksvattenförsörjning, översvämningssäkring och evakuering av äldreboende.",
+  "objectives": [
+    {
+      "code": "M1",
+      "description": "Säkra dricksvattenförsörjning vid förorenade reservoarer."
+    },
+    {
+      "code": "M2",
+      "description": "Evakuera äldreboende inom hotad zon på 4 timmar."
+    },
+    {
+      "code": "M3",
+      "description": "Etablera reservförsörjning av el till sårbara samhällsviktiga verksamheter."
+    }
+  ],
+  "mselSeed": [
+    {
+      "eventNo": 1,
+      "scenarioTimeOffsetMinutes": 0,
+      "fromRole": "sim_cell",
+      "toRole": "exercise_director",
+      "mode": "push",
+      "message": "SMHI klass 3-varning: havsnivå +1,8 m, kraftig nederbörd förväntas inom 6 h.",
+      "expectedResponse": "Aktivera krisstab. Kalla in dricksvattensansvarig."
+    },
+    {
+      "eventNo": 2,
+      "scenarioTimeOffsetMinutes": 90,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "push",
+      "message": "Vattenverket rapporterar att inkommande råvatten överskrider gränsvärden för bakterier.",
+      "expectedResponse": "Aktivera reservvattenplan."
+    }
+  ],
+  "classification": "internal"
+}

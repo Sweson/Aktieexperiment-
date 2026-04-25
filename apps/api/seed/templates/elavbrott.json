@@ -1,0 +1,42 @@
+{
+  "templateId": "elavbrott-2026",
+  "title": "Långvarigt elavbrott",
+  "msbTypEvent": "samhallsstorning.el",
+  "format": "ttx",
+  "summary": "Tabletop som täcker 72 timmars elavbrott i kommun, där reservkraft, värmestugor och kommunikation är centrala beroenden. Utgår från MSB:s Styrel-arbete.",
+  "objectives": [
+    {
+      "code": "M1",
+      "description": "Aktivera reservkraft på prioriterade objekt inom 60 min."
+    },
+    {
+      "code": "M2",
+      "description": "Öppna värmestugor med samverkan med Frivilliga Resursgruppen."
+    },
+    {
+      "code": "M3",
+      "description": "Säkra kommunikation till befolkningen utan internet och mobilnät."
+    }
+  ],
+  "mselSeed": [
+    {
+      "eventNo": 1,
+      "scenarioTimeOffsetMinutes": 0,
+      "fromRole": "sim_cell",
+      "toRole": "exercise_director",
+      "mode": "push",
+      "message": "Strömavbrott i hela kommunen. Elnätsleverantören uppger >24h återställningstid.",
+      "expectedResponse": "Aktivera krisledningsnämnd."
+    },
+    {
+      "eventNo": 2,
+      "scenarioTimeOffsetMinutes": 120,
+      "fromRole": "sim_cell",
+      "toRole": "player",
+      "mode": "push",
+      "message": "Hemtjänsten rapporterar att tre brukare med syrgaskoncentrator är utan ström.",
+      "expectedResponse": "Aktivera mobilt reservaggregat eller transportera till sjukhus."
+    }
+  ],
+  "classification": "internal"
+}
