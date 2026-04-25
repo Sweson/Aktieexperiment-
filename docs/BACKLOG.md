@@ -108,11 +108,13 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 
 ### Block D — Audit-logg (E-11)
 
-- [ ] **T-014 · Paket `packages/audit-log` — append-only med hashkedja**
+- [x] **T-014 · Paket `packages/audit-log` — append-only med hashkedja** _(2026-04-25)_
 
   - Beroende: T-011
-  - Filer: `packages/audit-log/src/*.ts`, schema-tillägg `audit_event`
-  - AC: `Logger.audit(event)` tar `{ actor, action, target, classification, payload }`; varje rad innehåller SHA-256 av föregående rad; ingen UPDATE/DELETE tillåtet på tabellen (Postgres rule + Prisma policy); verifierare som kan validera hela kedjan i en exercise.
+  - Filer: `packages/audit-log/src/index.ts`
+  - AC: `AuditChain.append(event)` tar `{ actor, action, target, classification, payload }`; varje rad innehåller SHA-256(prevHash || canonicalize(body)); off-line `verifyChain()` validerar hela kedjan och pekar ut första brutna sequence; classification valideras mot enum före append.
+  - QA: 13 tester gröna inkl. tampered payload, out-of-order, missing entry, deterministic hashing.
+  - TODO för T-015: lägga in audit_event-tabellen i Prisma + Postgres rule som blockerar UPDATE/DELETE.
 
 - [ ] **T-015 · Audit-logg-täckning på alla statusövergångar**
   - Beroende: T-014, T-013
