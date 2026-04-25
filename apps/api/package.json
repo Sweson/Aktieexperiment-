@@ -15,7 +15,9 @@
     "lint": "eslint src test"
   },
   "dependencies": {
+    "@fastify/swagger": "9.2.0",
     "@ovh/classification": "*",
+    "@scalar/fastify-api-reference": "1.25.116",
     "fastify": "5.0.0",
     "pino": "9.5.0",
     "zod": "3.23.8"

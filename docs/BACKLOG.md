@@ -81,10 +81,11 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - AC: hälsoslut `/healthz` och `/readyz` med readiness-probe-injection; pino med PII-redaktion på password/token/authorization/cookie/personnummer/ssn/email; SIGTERM/SIGINT triggar graceful shutdown via fastify.close(); `npm run dev` startar via tsx watch.
   - QA: 10 tester gröna (healthz, readyz både happy och 503-path, 404, logger redaction config), 100 % coverage på app.ts + logger.ts.
 
-- [ ] **T-010 · OpenAPI 3.1 via @fastify/swagger + Scalar UI**
+- [x] **T-010 · OpenAPI 3.1 via @fastify/swagger + Scalar UI** _(2026-04-25)_
 
   - Beroende: T-009
   - AC: `/docs` serverar API-dokumentation; alla endpoints (även hälsoslut) dokumenterade; spec exporterbar som JSON via `/openapi.json`.
+  - QA: 12 tester gröna; healthz och readyz har explicit OpenAPI-schema; /openapi.json returnerar OpenAPI 3.1.
 
 - [ ] **T-011 · Prisma-schema steg 1: Tenant, User, Membership, Role**
 
