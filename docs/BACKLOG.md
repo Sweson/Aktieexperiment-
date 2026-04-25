@@ -19,22 +19,26 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 
 ### Block A — Repo, CI, monorepo
 
-- [ ] **T-001 · Initiera monorepo med npm workspaces**
+- [x] **T-001 · Initiera monorepo med npm workspaces** _(2026-04-25)_
+
   - Beroende: —
-  - Filer: `package.json`, `tsconfig.base.json`, `.editorconfig`, `.gitignore`, `.nvmrc`
+  - Filer: `package.json`, `tsconfig.base.json`, `.editorconfig`, `.gitignore`, `.nvmrc`, `.prettierrc.json`, `.prettierignore`
   - AC: `npm install` rent på Node 22 LTS; `npm run -w apps/api build` failar med begripligt felmeddelande (apps finns inte än).
   - DoD: workspaces-config korrekt; `engines.node` satt; no warnings.
 
 - [ ] **T-002 · ESLint + Prettier + commitlint + lint-staged + husky**
+
   - Beroende: T-001
   - AC: `npm run lint` och `npm run format:check` exekverar; pre-commit hook kör lint-staged på ändrade filer; conventional-commits enforce på commit-message.
 
 - [ ] **T-003 · GitHub Actions CI: lint, typecheck, test, build**
+
   - Beroende: T-002
   - Filer: `.github/workflows/ci.yml`
   - AC: PR-checks kör i parallell; tider under 5 min på en tom monorepo; cache av npm.
 
 - [ ] **T-004 · Säkerhetspipeline: Semgrep, gitleaks, npm audit, SBOM**
+
   - Beroende: T-003
   - Filer: `.github/workflows/security.yml`, `.semgrep.yml`
   - AC: alla fyra scans kör på PR; SBOM (CycloneDX) uppladdas som artifact; gitleaks ren; högsta tillåtna severity som inte failar är Low.
@@ -47,11 +51,13 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block B — Klassmodell och DLP (E-10) — säkerhetskritisk
 
 - [ ] **T-006 · Paket `packages/classification` — enum + typer**
+
   - Beroende: T-001
   - Filer: `packages/classification/src/index.ts`, `*.test.ts`
   - AC: exporterar `Classification = "open" | "internal"`, zod-schema, helper `assertClassification(x)` som kastar på okända värden inkl. `confidential`/`secret`/`begränsat hemlig`/`hemlig`. Tester ≥95 % coverage.
 
 - [ ] **T-007 · DLP-regex för säkerhetsskyddsmarkeringar**
+
   - Beroende: T-006
   - Filer: `packages/classification/src/dlp.ts`, omfattande tester
   - AC: matchar svenska och engelska markeringar (BEGRÄNSAT HEMLIG/RESTRICTED, KONFIDENTIELL, HEMLIG/SECRET, KVALIFICERAT HEMLIG/TOP SECRET) samt EU-stämplar (EU RESTRICTED, EU CONFIDENTIEL UE, EU SECRET UE/EU SECRET, EU TRES SECRET); falska positiva minimerade (testa mot 50+ negativa fall: "kandidaten är hemligt förälskad", "den hemliga ingrediensen", etc.). Returnerar `{ flagged: boolean; matches: Match[] }`.
@@ -65,20 +71,24 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block C — API-grund och databas
 
 - [ ] **T-009 · Fastify-app skelett med graceful shutdown**
+
   - Beroende: T-001, T-005
   - Filer: `apps/api/src/server.ts`, `apps/api/src/app.ts`
   - AC: hälsoslut `/healthz` och `/readyz`; structured logging (pino) med PII-redaktion; graceful shutdown inom 30 s vid SIGTERM; `npm run dev` startar med nodemon.
 
 - [ ] **T-010 · OpenAPI 3.1 via @fastify/swagger + Scalar UI**
+
   - Beroende: T-009
   - AC: `/docs` serverar API-dokumentation; alla endpoints (även hälsoslut) dokumenterade; spec exporterbar som JSON via `/openapi.json`.
 
 - [ ] **T-011 · Prisma-schema steg 1: Tenant, User, Membership, Role**
+
   - Beroende: T-009
   - Filer: `apps/api/prisma/schema.prisma`, första migration
   - AC: tabeller med korrekta constraints; `tenant_id` på allt tenant-bundet; rollerna ÖL, LÖL, SL, MÖL, UL, LU, LOG, PL, Sim-cell, EXCON, Spelare, Observatör, Mentor, Red-team, VIP, Plattformsadmin, Tenantadmin enligt kravspec §4.2.
 
 - [ ] **T-012 · Prisma-schema steg 2: Exercise, ExerciseObjective, Capability**
+
   - Beroende: T-011
   - AC: relation till tenant via FK; mjuk radering med `deleted_at`; index på `(tenant_id, status)`; `capability` seedad med MSB:s 12 generella förmågor.
 
@@ -89,6 +99,7 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block D — Audit-logg (E-11)
 
 - [ ] **T-014 · Paket `packages/audit-log` — append-only med hashkedja**
+
   - Beroende: T-011
   - Filer: `packages/audit-log/src/*.ts`, schema-tillägg `audit_event`
   - AC: `Logger.audit(event)` tar `{ actor, action, target, classification, payload }`; varje rad innehåller SHA-256 av föregående rad; ingen UPDATE/DELETE tillåtet på tabellen (Postgres rule + Prisma policy); verifierare som kan validera hela kedjan i en exercise.
@@ -100,11 +111,13 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block E — Auth (E-09)
 
 - [ ] **T-016 · OIDC-anslutning med stub-IdP i dev**
+
   - Beroende: T-009
   - Filer: `apps/api/src/plugins/auth.ts`, `infra/dev-idp/`
   - AC: dev-IdP via Keycloak i docker-compose; `/auth/login` redirectar; tokens valideras; `request.user` tillgängligt i route handlers.
 
 - [ ] **T-017 · BankID-stub (mock) för dev/test**
+
   - Beroende: T-016
   - AC: stub returnerar deterministiska svar; tydlig "STUB"-markering i loggar; integrationskontrakt mot riktig BankID dokumenterat i ADR. `[~]` HITL: kontraktsdetaljer mot riktig BankID.
 
@@ -115,10 +128,12 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block F — Övningsdesigner (E-01) MVP
 
 - [ ] **T-019 · CRUD-endpoints för Exercise**
+
   - Beroende: T-012, T-018
   - AC: REST endpoints med OpenAPI-doc; behörighet via ABAC; pagination; e2e-test.
 
 - [ ] **T-020 · CRUD-endpoints för MselEvent + CSV-import**
+
   - Beroende: T-013, T-008
   - AC: import valideras mot HSEEP-fältmodellen; rader med säkerhetsskyddsmarkering avvisas tydligt (referera kravspec §4.3 F-04.1 AC4); rapportvisning över felrader; ≤20 000 rader på <30 s.
 
@@ -130,10 +145,12 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block G — Frontend MVP (E-01)
 
 - [ ] **T-022 · Next.js 15 init med App Router + auth-integration**
+
   - Beroende: T-001, T-016
   - AC: login redirect mot OIDC; serverkomponent visar inloggad användare; designtokens-paket (`packages/ui-tokens`).
 
 - [ ] **T-023 · Övningsdesigner-wizard 3 steg**
+
   - Beroende: T-022, T-021
   - AC: välj mall → fyll basinfo → spara; klassningsfält som dropdown med endast Öppen/Intern; tangentbordsnavigering; WCAG 2.1 AA verifierad med axe-core.
 
@@ -144,6 +161,7 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block H — EEG/AAR-mall (E-16)
 
 - [ ] **T-025 · EEG-datamodell och CRUD**
+
   - Beroende: T-013
   - AC: tabeller `evaluation_plan`, `observation`, `improvement_action`; struktur följer HSEEP IP01.
 
@@ -154,6 +172,7 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
 ### Block I — Pilot-paket
 
 - [ ] **T-027 · Onboarding-script för pilot-tenant**
+
   - Beroende: T-019, T-021
   - AC: skapar tenant + admin + 5 testanvändare + 1 övning från mall via en kommando; idempotent.
 
@@ -257,4 +276,4 @@ nivå av AC och DoD som PI 1)
 
 ---
 
-*Senast ändrad: 2026-04-25*
+_Senast ändrad: 2026-04-25_

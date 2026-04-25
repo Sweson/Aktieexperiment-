@@ -7,16 +7,16 @@ hemlig och uppåt enligt säkerhetsskyddslagen 2018:585).
 
 ## Var saker ligger
 
-| Fil/katalog                              | Roll                                                  |
-| ---------------------------------------- | ----------------------------------------------------- |
-| [`CLAUDE.md`](CLAUDE.md)                 | Autonom arbetsinstruktion — läses vid sessionsstart   |
-| [`docs/KRAVSPEC.md`](docs/KRAVSPEC.md)   | Sammanfattad kravspecifikation (full version i v1.1)  |
-| [`docs/BACKLOG.md`](docs/BACKLOG.md)     | Sekvenserad atomär arbetslista, sju PI över 21 mån    |
-| [`docs/adr/`](docs/adr/)                 | Architectural Decision Records                        |
-| `apps/api/`                              | Fastify backend (Node 22, TypeScript, Prisma)         |
-| `apps/web/`                              | Next.js 15 frontend                                   |
-| `packages/classification/`               | Klassmodell + DLP — säkerhetskritiskt paket           |
-| `packages/audit-log/`                    | Append-only auditlogg med hashkedja                   |
+| Fil/katalog                            | Roll                                                 |
+| -------------------------------------- | ---------------------------------------------------- |
+| [`CLAUDE.md`](CLAUDE.md)               | Autonom arbetsinstruktion — läses vid sessionsstart  |
+| [`docs/KRAVSPEC.md`](docs/KRAVSPEC.md) | Sammanfattad kravspecifikation (full version i v1.1) |
+| [`docs/BACKLOG.md`](docs/BACKLOG.md)   | Sekvenserad atomär arbetslista, sju PI över 21 mån   |
+| [`docs/adr/`](docs/adr/)               | Architectural Decision Records                       |
+| `apps/api/`                            | Fastify backend (Node 22, TypeScript, Prisma)        |
+| `apps/web/`                            | Next.js 15 frontend                                  |
+| `packages/classification/`             | Klassmodell + DLP — säkerhetskritiskt paket          |
+| `packages/audit-log/`                  | Append-only auditlogg med hashkedja                  |
 
 ## Snabbstart för utvecklare
 

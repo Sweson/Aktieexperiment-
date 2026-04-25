@@ -65,22 +65,22 @@ Sekvenserad arbetslista: [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## 3 · Stack och konventioner
 
-| Lager        | Val                                                                |
-| ------------ | ------------------------------------------------------------------ |
-| Språk        | TypeScript (strict), Node 22 LTS                                   |
-| API          | Fastify 5 + `@fastify/swagger` (OpenAPI 3.1)                       |
-| Databas      | PostgreSQL 16 + Prisma                                             |
-| Auth         | OIDC + SAML; BankID/Freja eID+ via stub i dev                      |
-| Validation   | `zod` v4 — alla externa indata                                     |
-| Auth-policy  | `@open-policy-agent/opa-wasm` (Rego) eller Cedar                   |
-| Tester       | `vitest` (unit/integration), `playwright` (e2e)                    |
-| Logger       | `pino` med PII-redaktion                                           |
-| Frontend     | Next.js 15 (App Router) + React Server Components                  |
-| UI-bibliotek | `shadcn/ui` ovanpå Radix; egen designtokens-modul                  |
-| GIS          | MapLibre GL JS + PMTiles                                           |
-| Realtid      | NATS JetStream för injekter, WebSocket via Fastify                 |
-| Container    | Docker, multi-stage; distroless runtime                            |
-| CI/CD        | GitHub Actions; SAST: Semgrep; SCA: `npm audit` + Snyk; SBOM: cyclonedx |
+| Lager        | Val                                                                        |
+| ------------ | -------------------------------------------------------------------------- |
+| Språk        | TypeScript (strict), Node 22 LTS                                           |
+| API          | Fastify 5 + `@fastify/swagger` (OpenAPI 3.1)                               |
+| Databas      | PostgreSQL 16 + Prisma                                                     |
+| Auth         | OIDC + SAML; BankID/Freja eID+ via stub i dev                              |
+| Validation   | `zod` v4 — alla externa indata                                             |
+| Auth-policy  | `@open-policy-agent/opa-wasm` (Rego) eller Cedar                           |
+| Tester       | `vitest` (unit/integration), `playwright` (e2e)                            |
+| Logger       | `pino` med PII-redaktion                                                   |
+| Frontend     | Next.js 15 (App Router) + React Server Components                          |
+| UI-bibliotek | `shadcn/ui` ovanpå Radix; egen designtokens-modul                          |
+| GIS          | MapLibre GL JS + PMTiles                                                   |
+| Realtid      | NATS JetStream för injekter, WebSocket via Fastify                         |
+| Container    | Docker, multi-stage; distroless runtime                                    |
+| CI/CD        | GitHub Actions; SAST: Semgrep; SCA: `npm audit` + Snyk; SBOM: cyclonedx    |
 | Krypto       | TLS 1.3; AES-256-GCM via `node:crypto`; nyckelhantering via KMS-stub i dev |
 
 **Layoutkonvention (monorepo, npm workspaces):**
@@ -141,6 +141,7 @@ testar, eller `apps/api/test/` för integrationstester). Kör `npm test` —
 verifiera att tester finns och faktiskt failar med relevant felmeddelande.
 
 Obligatoriska testfall:
+
 - Happy path
 - Behörighetsfall (rollen X får, rollen Y får inte)
 - Klassningsgräns (`internal` accepteras, `confidential` avvisas med 400)
@@ -178,6 +179,7 @@ Bocka mentalt av allt nedan innan PR/commit:
 ### Steg 6 — Dokumentera ADR vid behov
 
 Skriv en kort ADR i `docs/adr/NNNN-<titel>.md` (mall i §6) om du:
+
 - Inför ett nytt externt beroende
 - Ändrar persistens eller auth-flöde
 - Bryter ett tidigare beslut
@@ -231,15 +233,19 @@ fråga innan du börjar:
 - Beslutsfattare: <Claude + HITL-godkännare om relevant>
 
 ## Kontext
+
 <Varför står vi inför detta beslut?>
 
 ## Beslut
+
 <Vad bestämde vi?>
 
 ## Konsekvenser
+
 <Positiva, negativa, neutrala konsekvenser av beslutet.>
 
 ## Alternativ som övervägdes
+
 <Vad valdes bort och varför.>
 ```
 
@@ -248,6 +254,7 @@ fråga innan du börjar:
 ## 7 · Self-prompts (kopiera in i Claude vid behov)
 
 ### 7.1 Story → tester (BDD)
+
 > Du är Test Lead med BDD-kompetens. Generera AC i Given/When/Then som
 > täcker happy path, behörighet, felhantering, NFR (svarstider, audit),
 > säkerhet (input-validering, auth, kryptering), WCAG 2.1 AA och
@@ -255,6 +262,7 @@ fråga innan du börjar:
 > på 5–10 verifierbara scenarion på svenska.
 
 ### 7.2 Kod TDD
+
 > Du är Senior SE som arbetar TDD-strikt. Stack: TypeScript, Node 22,
 > Fastify, PostgreSQL, Prisma. Plattformen hanterar maximalt intern
 > information — ingen kod får implementera funktionalitet för
@@ -265,6 +273,7 @@ fråga innan du börjar:
 > testtäckning, migrationer, ADR-länk om relevant.
 
 ### 7.3 Säkerhetsgranskning
+
 > Du är AppSec-konsult med ASVS L2-kompetens. Granska följande PR-diff
 > mot OWASP ASVS v5 L2 och OWASP Top 10. Per kategori (A01–A10): status,
 > fynd med allvarlighet, CWE-ID, kodrad, åtgärd. Verifiera att inga
@@ -273,6 +282,7 @@ fråga innan du börjar:
 > fångar försök att kringgå klassmodellen.
 
 ### 7.4 AAR-utkast
+
 > Du är utvärderingsexpert med HSEEP- och MSB-metodikkompetens. Givet
 > övningslogg och MSEL: identifiera avvikelser. Strukturera observationer
 > i ODCR-format (Observation, Diskussion, Slutsats, Rekommendation) per
@@ -304,4 +314,4 @@ Eftersom varje session startar utan minne av föregående:
 
 ---
 
-*Senast ändrad: 2026-04-25*
+_Senast ändrad: 2026-04-25_

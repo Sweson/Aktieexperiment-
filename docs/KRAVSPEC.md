@@ -14,7 +14,7 @@ Denna kravspecifikation beskriver en **suverän, svensk SaaS-plattform för plan
 
 **Tydlig avgränsning mot säkerhetsskydd.** Plattformen är medvetet designad för information klassad som öppen eller intern. För övningar som behandlar uppgifter som rör Sveriges säkerhet eller som omfattas av säkerhetsskyddslagen ska andra, säkerhetsskyddsklassade verktyg användas. Tekniska och organisatoriska kontroller (klassmodellen, ABAC-policy, plattformsadminens guardrails) ska aktivt **förhindra** att säkerhetsskyddsklassificerat material läggs in.
 
-Den centrala produkthypotesen lyder: *Genom att digitalisera och kvalitetshöja icke-säkerhetsskyddad krisövningsverksamhet i hela samhället – från privata sjukhus och kommunala krisledningsnämnder till banker och statliga beredskapsmyndigheter – kan Sverige öva oftare, mer realistiskt och med mätbart bättre lärande, vilket direkt stärker den civila beredskapen.* Plattformen drivs i **två mognadsnivåer** på samma kodbas: Civil/BCM (näringsliv, vård, frivilligorganisationer) och Offentlig sektor (kommuner, regioner, myndigheter på intern-nivå).
+Den centrala produkthypotesen lyder: _Genom att digitalisera och kvalitetshöja icke-säkerhetsskyddad krisövningsverksamhet i hela samhället – från privata sjukhus och kommunala krisledningsnämnder till banker och statliga beredskapsmyndigheter – kan Sverige öva oftare, mer realistiskt och med mätbart bättre lärande, vilket direkt stärker den civila beredskapen._ Plattformen drivs i **två mognadsnivåer** på samma kodbas: Civil/BCM (näringsliv, vård, frivilligorganisationer) och Offentlig sektor (kommuner, regioner, myndigheter på intern-nivå).
 
 Konkurrentanalysen visar att marknaden domineras av amerikanska generalister (WebEOC/Juvare, Veoci, D4H), tyska BCM-spelare (F24/FACT24, Riskonnect) och NATO-interna verktyg (JEMM). **Ingen aktör är samtidigt MSB-metodikförst och svensk-suverän med tydlig EU/Sverige-driftbas.** Det är denna lucka plattformen ska fylla.
 
@@ -40,42 +40,42 @@ Sex strategiska teman styr portföljens investeringar 2026–2028.
 
 ## 3. Portfolio Epics
 
-| #     | Tema | Epic                                                                   | Typ          |
-| ----- | ---- | ---------------------------------------------------------------------- | ------------ |
-| E‑01  | ST‑1 | Övningsdesigner och scenariobibliotek                                  | Business     |
-| E‑02  | ST‑1 | Multi-tenant och rollramverk för svensk beredskapsstruktur             | Enabler      |
-| E‑03  | ST‑1 | Onboarding, mallar och MSB-metodikguide                                | Business     |
-| E‑04  | ST‑2 | MSEL- och inject-motor (HSEEP-aligned)                                 | Business     |
-| E‑05  | ST‑2 | Realtids-EXCON och spelmiljö                                           | Business     |
-| E‑06  | ST‑2 | GIS och Common Operational Picture                                     | Business     |
-| E‑07  | ST‑2 | Kommunikationssimulering (sociala medier, DISINFO, simulerad telefoni) | Business     |
-| E‑08  | ST‑2 | Integration WIS, Sjunet, öppna API:er                                  | Enabler      |
-| E‑09  | ST‑3 | Identitet, federation och stark autentisering                          | Enabler      |
-| E‑10  | ST‑3 | Informationsklassning **upp till INTERN**, ABAC och DLP                | Enabler      |
-| E‑11  | ST‑3 | Krypto, nyckelhantering och loggintegritet                             | Enabler      |
-| E‑12  | ST‑3 | Compliance-paket (NIS2, DORA, GDPR, arkivlag, ISO 27001/27701)         | Compliance   |
-| E‑13  | ST‑4 | AI-scenarioassistent och adaptiva injekter                             | Business     |
-| E‑14  | ST‑4 | AI-driven AAR och Lessons Learned-analys                               | Business     |
-| E‑15  | ST‑5 | Förmågeobservatorium och benchmarking                                  | Business     |
-| E‑16  | ST‑5 | Utvärderings- och EEG-ramverk                                          | Business     |
-| E‑17  | ST‑6 | Offline-, edge- och degraded-mode                                      | Architecture |
-| E‑18  | ST‑6 | Resiliens, observability och DR                                        | Architecture |
+| #    | Tema | Epic                                                                   | Typ          |
+| ---- | ---- | ---------------------------------------------------------------------- | ------------ |
+| E‑01 | ST‑1 | Övningsdesigner och scenariobibliotek                                  | Business     |
+| E‑02 | ST‑1 | Multi-tenant och rollramverk för svensk beredskapsstruktur             | Enabler      |
+| E‑03 | ST‑1 | Onboarding, mallar och MSB-metodikguide                                | Business     |
+| E‑04 | ST‑2 | MSEL- och inject-motor (HSEEP-aligned)                                 | Business     |
+| E‑05 | ST‑2 | Realtids-EXCON och spelmiljö                                           | Business     |
+| E‑06 | ST‑2 | GIS och Common Operational Picture                                     | Business     |
+| E‑07 | ST‑2 | Kommunikationssimulering (sociala medier, DISINFO, simulerad telefoni) | Business     |
+| E‑08 | ST‑2 | Integration WIS, Sjunet, öppna API:er                                  | Enabler      |
+| E‑09 | ST‑3 | Identitet, federation och stark autentisering                          | Enabler      |
+| E‑10 | ST‑3 | Informationsklassning **upp till INTERN**, ABAC och DLP                | Enabler      |
+| E‑11 | ST‑3 | Krypto, nyckelhantering och loggintegritet                             | Enabler      |
+| E‑12 | ST‑3 | Compliance-paket (NIS2, DORA, GDPR, arkivlag, ISO 27001/27701)         | Compliance   |
+| E‑13 | ST‑4 | AI-scenarioassistent och adaptiva injekter                             | Business     |
+| E‑14 | ST‑4 | AI-driven AAR och Lessons Learned-analys                               | Business     |
+| E‑15 | ST‑5 | Förmågeobservatorium och benchmarking                                  | Business     |
+| E‑16 | ST‑5 | Utvärderings- och EEG-ramverk                                          | Business     |
+| E‑17 | ST‑6 | Offline-, edge- och degraded-mode                                      | Architecture |
+| E‑18 | ST‑6 | Resiliens, observability och DR                                        | Architecture |
 
 ---
 
 ## 4. Icke-funktionella krav (sammanfattning)
 
-| Område                       | Krav                                                                                                                                          |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Datasuveränitet**          | All data och behandling i Sverige (primärt) eller EU/EES; suveräna molnplattformar (Tietoevry, City Network/Cleura, Evroc) eller on-prem      |
-| **Kryptering**               | TLS 1.3 in-transit; AES-256-GCM at-rest; HSM FIPS 140-2 nivå 2+; nyckelrotation ≤12 mån; BYOK valbart; post-kvant-hybrid på roadmap           |
-| **Identitet**                | SAML/OIDC, SCIM, BankID, Freja eID+; MFA obligatoriskt (TOTP/FIDO2/passkeys)                                                                  |
-| **Tillgänglighet UX**        | WCAG 2.1 AA, EN 301 549 V3.2.1; svenska, engelska, samiska                                                                                    |
-| **Drifttillgänglighet**      | ≥99,9 % normalt; ≥99,99 % under aktiv övning; RTO ≤30 min; RPO ≤1 min                                                                         |
-| **Skalbarhet**               | ≥1 000 samtidiga deltagare per övning; ≥10 parallella övningar per tenant; ≥100 tenants per region                                            |
-| **Prestanda**                | API P95 <200 ms, P99 <500 ms; LCP <2 s på 4G; injekt-latens <1 s                                                                              |
-| **Informationsklass-spärr**  | Tekniska kontroller förhindrar att säkerhetsskyddsklassad information laddas upp eller skapas (DLP-mönster, klassningsfält-enum)              |
-| **Loggintegritet**           | Append-only audit, kryptografisk hashkedja, WORM-lagring ≥10 år                                                                               |
+| Område                      | Krav                                                                                                                                     |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Datasuveränitet**         | All data och behandling i Sverige (primärt) eller EU/EES; suveräna molnplattformar (Tietoevry, City Network/Cleura, Evroc) eller on-prem |
+| **Kryptering**              | TLS 1.3 in-transit; AES-256-GCM at-rest; HSM FIPS 140-2 nivå 2+; nyckelrotation ≤12 mån; BYOK valbart; post-kvant-hybrid på roadmap      |
+| **Identitet**               | SAML/OIDC, SCIM, BankID, Freja eID+; MFA obligatoriskt (TOTP/FIDO2/passkeys)                                                             |
+| **Tillgänglighet UX**       | WCAG 2.1 AA, EN 301 549 V3.2.1; svenska, engelska, samiska                                                                               |
+| **Drifttillgänglighet**     | ≥99,9 % normalt; ≥99,99 % under aktiv övning; RTO ≤30 min; RPO ≤1 min                                                                    |
+| **Skalbarhet**              | ≥1 000 samtidiga deltagare per övning; ≥10 parallella övningar per tenant; ≥100 tenants per region                                       |
+| **Prestanda**               | API P95 <200 ms, P99 <500 ms; LCP <2 s på 4G; injekt-latens <1 s                                                                         |
+| **Informationsklass-spärr** | Tekniska kontroller förhindrar att säkerhetsskyddsklassad information laddas upp eller skapas (DLP-mönster, klassningsfält-enum)         |
+| **Loggintegritet**          | Append-only audit, kryptografisk hashkedja, WORM-lagring ≥10 år                                                                          |
 
 ---
 

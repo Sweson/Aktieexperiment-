@@ -1,0 +1,27 @@
+{
+  "name": "ovningshub-sverige",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Suverän svensk SaaS-plattform för krisövning på öppen och intern informationsnivå",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0 <23",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\""
+  },
+  "devDependencies": {
+    "prettier": "3.3.3",
+    "typescript": "5.6.3"
+  }
+}
