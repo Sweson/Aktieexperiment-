@@ -248,3 +248,30 @@ model MselEvent {
   @@index([tenantId, classification])
   @@map("msel_event")
 }
+
+/// Append-only audit log med hashkedja (CLAUDE.md §1.6, kravspec §4.9 F-11.3).
+/// UPDATE och DELETE på denna tabell är blockerade av en Postgres rule
+/// (`prisma/sql/audit_event_immutability.sql`). Migration som rör tabellen
+/// kräver HITL-godkännande (CLAUDE.md §5.2).
+model AuditEvent {
+  id             String         @id @default(uuid()) @db.Uuid
+  tenantId       String?        @map("tenant_id") @db.Uuid
+  sequence       BigInt
+  prevHash       String         @map("prev_hash") @db.Char(64)
+  hash           String         @unique @db.Char(64)
+  timestamp      DateTime
+  actorId        String         @map("actor_id")
+  actorKind      String         @map("actor_kind")
+  action         String
+  targetId       String         @map("target_id")
+  targetKind     String         @map("target_kind")
+  classification Classification
+  payload        Json
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  @@unique([tenantId, sequence])
+  @@index([tenantId, action])
+  @@index([targetKind, targetId])
+  @@index([timestamp])
+  @@map("audit_event")
+}

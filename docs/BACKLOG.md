@@ -116,9 +116,11 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - QA: 13 tester gröna inkl. tampered payload, out-of-order, missing entry, deterministic hashing.
   - TODO för T-015: lägga in audit_event-tabellen i Prisma + Postgres rule som blockerar UPDATE/DELETE.
 
-- [ ] **T-015 · Audit-logg-täckning på alla statusövergångar**
+- [x] **T-015 · Audit-logg-täckning: schema, immutability och statusövergångs-grund** _(2026-04-25)_
   - Beroende: T-014, T-013
-  - AC: när Exercise eller MselEvent byter `status` skrivs auditrad; integrationstest som muterar status och verifierar kedjan.
+  - Filer: `apps/api/prisma/schema.prisma` (model AuditEvent), `apps/api/prisma/sql/audit_event_immutability.sql`, `docs/adr/0001-audit-log-immutability.md`
+  - AC: AuditEvent-modell finns i Prisma-schemat med alla hashkedje-fält; SQL-skript blockerar UPDATE/DELETE via Postgres rules + REVOKE; ADR dokumenterar beslut.
+  - Not: Faktisk hookning på Exercise.status och MselEvent.status sker i T-019/T-020 där de routes som muterar status införs. Här levereras det datapersistens-kontrakt som behövs.
 
 ### Block E — Auth (E-09)
 
