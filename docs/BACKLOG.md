@@ -37,10 +37,10 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - Filer: `.github/workflows/ci.yml`
   - AC: PR-checks kör i parallell; tider under 5 min på en tom monorepo; cache av npm.
 
-- [ ] **T-004 · Säkerhetspipeline: Semgrep, gitleaks, npm audit, SBOM**
+- [x] **T-004 · Säkerhetspipeline: Semgrep, gitleaks, npm audit, SBOM** _(2026-04-25)_
 
   - Beroende: T-003
-  - Filer: `.github/workflows/security.yml`, `.semgrep.yml`
+  - Filer: `.github/workflows/security.yml`, `.semgrep.yml`, `.gitleaks.toml`
   - AC: alla fyra scans kör på PR; SBOM (CycloneDX) uppladdas som artifact; gitleaks ren; högsta tillåtna severity som inte failar är Low.
 
 - [ ] **T-005 · Docker-compose för lokal dev (Postgres, NATS, MinIO, MailHog)**
