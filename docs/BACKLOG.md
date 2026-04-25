@@ -26,7 +26,7 @@ klassningsspärr. Pilotbar för 3 kommuner + 1 region som TTX-verktyg.
   - AC: `npm install` rent på Node 22 LTS; `npm run -w apps/api build` failar med begripligt felmeddelande (apps finns inte än).
   - DoD: workspaces-config korrekt; `engines.node` satt; no warnings.
 
-- [ ] **T-002 · ESLint + Prettier + commitlint + lint-staged + husky**
+- [x] **T-002 · ESLint + Prettier + commitlint + lint-staged + husky** _(2026-04-25)_
 
   - Beroende: T-001
   - AC: `npm run lint` och `npm run format:check` exekverar; pre-commit hook kör lint-staged på ändrade filer; conventional-commits enforce på commit-message.
